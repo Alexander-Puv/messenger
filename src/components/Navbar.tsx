@@ -1,9 +1,9 @@
 import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Avatar, Button, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
-import AppContext from '../context/AppContext';
-
-const settings = ['Profile', 'Settings', 'FAQ', 'Logout']
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { FirebaseContext } from '../main';
+import { settings } from '../utils/navbarSettings';
 
 interface NavbarProps {
   username: string,
@@ -12,8 +12,8 @@ interface NavbarProps {
 
 export default function Navbar({username, avatar}: NavbarProps) {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const context = useContext(AppContext);
-
+  const {auth} = useContext(FirebaseContext)
+  const [user] = useAuthState(auth)
   
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -25,7 +25,7 @@ export default function Navbar({username, avatar}: NavbarProps) {
   return (
     <AppBar position="static">
       <Toolbar>
-        {context?.isAuth ? <>
+        {user ? <>
           <IconButton
             size="large"
             color="inherit"
@@ -48,8 +48,8 @@ export default function Navbar({username, avatar}: NavbarProps) {
             onClose={handleCloseUserMenu}
           >
             {settings.map((setting) => (
-              <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                <Typography textAlign="center">{setting}</Typography>
+              <MenuItem key={setting.title} onClick={handleCloseUserMenu}>
+                <Typography textAlign="center" onClick={setting.onClick}>{setting.title}</Typography>
               </MenuItem>
             ))}
           </Menu>
