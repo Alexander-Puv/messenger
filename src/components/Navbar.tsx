@@ -2,7 +2,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Avatar, Button, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { FirebaseContext } from '../main';
+import { FirebaseContext } from '../MainConf';
 import { settings } from '../utils/navbarSettings';
 
 interface NavbarProps {
@@ -49,7 +49,7 @@ export default function Navbar({username, avatar}: NavbarProps) {
           >
             {settings.map((setting) => (
               <MenuItem key={setting.title} onClick={handleCloseUserMenu}>
-                <Typography textAlign="center" onClick={setting.onClick}>{setting.title}</Typography>
+                <Typography textAlign="center" onClick={() => setting.onClick({auth})}>{setting.title}</Typography>
               </MenuItem>
             ))}
           </Menu>

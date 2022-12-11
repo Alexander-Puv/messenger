@@ -3,7 +3,7 @@ import { grey } from '@mui/material/colors'
 import Grid from '@mui/material/Grid'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { useContext } from 'react'
-import { FirebaseContext } from '../main'
+import { FirebaseContext } from '../MainConf'
 
 const Login = () => {
   const {auth} = useContext(FirebaseContext)
@@ -11,7 +11,6 @@ const Login = () => {
   const login = async () => {
     const provider = new GoogleAuthProvider()
     const {user} = await signInWithPopup(auth, provider)
-    console.log(user);
   }
   
   return (

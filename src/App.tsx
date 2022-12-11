@@ -1,13 +1,18 @@
 import { useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
+import { useAuthState } from 'react-firebase-hooks/auth'
 import { BrowserRouter } from 'react-router-dom'
 import './App.css'
 import { AppRouter, Navbar } from './components'
+import { Loader } from './components/UI'
+import { FirebaseContext } from './MainConf'
 
 function App() {
   const [username, setUsername] = useState('');
   const [avatar, setAvatar] = useState('');
+  const {auth} = useContext(FirebaseContext)
+  const [user, loading, error] = useAuthState(auth)
   const theme = useTheme()
 
   return (
@@ -30,18 +35,21 @@ function App() {
         maxWidth: 1400,
         width: '100%'
       }}>
-        <BrowserRouter>
-          <Navbar username={username} avatar={avatar} />
-          <Box component='main' sx={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            background: theme.palette.background.default,
-            backgroundImage: 'linear-gradient(rgba(255 255 255 / 0.02), rgba(255 255 255 / 0.02))'
-          }}>
-            <AppRouter />
-          </Box>
-        </BrowserRouter>
+        {loading ? <Loader />
+        :
+          <BrowserRouter>
+            <Navbar username={username} avatar={avatar} />
+            <Box component='main' sx={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              background: theme.palette.background.default,
+              backgroundImage: 'linear-gradient(rgba(255 255 255 / 0.02), rgba(255 255 255 / 0.02))'
+            }}>
+              <AppRouter />
+            </Box>
+          </BrowserRouter>
+        }
       </Box>
     </Box>
   )
