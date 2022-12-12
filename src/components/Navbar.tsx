@@ -1,5 +1,5 @@
 import MenuIcon from '@mui/icons-material/Menu';
-import { AppBar, Avatar, Button, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
+import { AppBar, Avatar, Button, IconButton, Menu, MenuItem, Toolbar, Typography, Tooltip } from '@mui/material';
 import { useContext, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../MainConf';
@@ -26,14 +26,16 @@ export default function Navbar({username, avatar}: NavbarProps) {
     <AppBar position="static">
       <Toolbar>
         {user ? <>
-          <IconButton
-            size="large"
-            color="inherit"
-            sx={{ mr: 'auto' }}
-            onClick={handleOpenUserMenu}
-          >
-            <MenuIcon />
-          </IconButton>
+          <Tooltip title="Open settings">
+            <IconButton
+              size="large"
+              color="inherit"
+              sx={{ mr: 'auto' }}
+              onClick={handleOpenUserMenu}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Tooltip>
           <Menu
             anchorEl={anchorElUser}
             anchorOrigin={{
@@ -53,7 +55,9 @@ export default function Navbar({username, avatar}: NavbarProps) {
               </MenuItem>
             ))}
           </Menu>
-          <Avatar alt={username} src={avatar} />
+          <Tooltip title={user?.displayName}>
+            <Avatar src={user.photoURL ? user.photoURL : ''} alt={user.displayName ? user.displayName : ''} />
+          </Tooltip>
         </>
         : <Button color="inherit" sx={{ml: 'auto'}}>Login</Button>}
       </Toolbar>
