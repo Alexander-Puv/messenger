@@ -1,7 +1,7 @@
 import { Avatar, Box, Grid, Typography } from '@mui/material';
 import { blue, blueGrey } from '@mui/material/colors';
-import { addDoc, collection, orderBy, query, serverTimestamp } from 'firebase/firestore';
-import { useContext, useState } from 'react';
+import { collection, orderBy, query } from 'firebase/firestore';
+import { useContext } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { Loader } from '../components/UI';
@@ -17,7 +17,8 @@ const MessagesField = () => {
   }
 
   return (
-    <Box sx={{overflowY: 'auto'}} width='100%' maxHeight='calc(100vh - 120px)' height='100%'/*  position='absolute' */>
+    <Box sx={{overflowY: 'auto'}} width='100%' /* maxHeight='calc(100vh - 120px)' height='100%' */ position='absolute' top={0} bottom='56px'>
+    <Box height='100%'>
       {messages?.map(msg =>
         <Box key={msg.createdAt} m={1}>
           <Grid container sx={user?.uid === msg.uid ? {flexDirection: 'row-reverse'} : {}}>
@@ -45,6 +46,7 @@ const MessagesField = () => {
           </Grid>
         </Box>
       )}
+    </Box>
     </Box>
   )
 }

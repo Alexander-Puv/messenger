@@ -18,9 +18,10 @@ const Footer = () => {
       text: value,
       createdAt: serverTimestamp()
     })
+    setValue('')
   }
   return (
-    <Grid container alignSelf='flex-end' component='footer'>
+    <Grid container alignSelf='flex-end' component='footer' position='absolute' sx={{bottom: 0, right: 0}} p={1}>
       <TextField
         variant='outlined'
         sx={{flex: 1}}
