@@ -3,5 +3,5 @@ import Chat from './Chat'
 
 export {
   Login,
-  Chat
+  Chat,
 }

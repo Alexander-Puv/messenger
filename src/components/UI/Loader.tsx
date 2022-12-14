@@ -1,17 +1,8 @@
-import { Oval } from "react-loader-spinner"
+import CircularProgress from '@mui/material/CircularProgress'
 
 const Loading = () => {
   return (
-    <Oval
-      ariaLabel="loading-indicator"
-      height={100}
-      width={100}
-      strokeWidth={1}
-      strokeWidthSecondary={5}
-      color="#1976d2"
-      secondaryColor="transparent"
-      wrapperStyle={{margin: 'auto'}}
-    />
+    <CircularProgress sx={{m: 'auto'}} />
   )
 }
 

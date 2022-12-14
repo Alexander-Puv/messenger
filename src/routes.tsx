@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Chat, Login } from './pages/index';
 import { CHAT_ROUTE, LOGIN_ROUTE } from './utils/consts';

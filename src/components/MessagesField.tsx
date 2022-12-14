@@ -17,7 +17,7 @@ const MessagesField = () => {
   }
 
   return (
-    <Box sx={{overflowY: 'auto'}} width='100%' /* maxHeight='calc(100vh - 120px)' height='100%' */ position='absolute' top={0} bottom='56px'>
+    <Box sx={{overflowY: 'auto'}} width='100%' position='absolute' top={0} bottom='56px'>
     <Box height='100%'>
       {messages?.map(msg =>
         <Box key={msg.createdAt} m={1}>

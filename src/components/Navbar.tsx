@@ -1,9 +1,21 @@
 import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Avatar, Button, IconButton, Menu, MenuItem, Toolbar, Typography, Tooltip } from '@mui/material';
+import { red } from '@mui/material/colors';
 import { useContext, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../MainConf';
 import { settings } from '../utils/navbarSettings';
+import { createContext } from 'react'
+import Popup, { PopupProps } from './UI/Popup';
+import { Auth } from 'firebase/auth';
+
+interface NavbarContextProps {
+  popup: PopupProps | null,
+  setPopup: (props: PopupProps | null) => void,
+  auth: Auth
+}
+
+export const NavbarContext = createContext<NavbarContextProps | null>(null)
 
 interface NavbarProps {
   username: string,
@@ -12,6 +24,7 @@ interface NavbarProps {
 
 export default function Navbar({username, avatar}: NavbarProps) {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [popup, setPopup] = useState<null | PopupProps>(null);
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   
@@ -23,6 +36,7 @@ export default function Navbar({username, avatar}: NavbarProps) {
   }
 
   return (
+    <NavbarContext.Provider value={{popup, setPopup, auth}}>
     <AppBar position="static">
       <Toolbar>
         {user ? <>
@@ -50,8 +64,10 @@ export default function Navbar({username, avatar}: NavbarProps) {
             onClose={handleCloseUserMenu}
           >
             {settings.map((setting) => (
-              <MenuItem key={setting.title} onClick={handleCloseUserMenu}>
-                <Typography textAlign="center" onClick={() => setting.onClick({auth})}>{setting.title}</Typography>
+              <MenuItem key={setting.title} onClick={() => {handleCloseUserMenu(); setting.onClick({setPopup})}}>
+                <Typography textAlign="center" sx={setting.title === 'Logout' ? {fontWeight: '500', color: red[700]} : {}}>
+                  {setting.title}
+                </Typography>
               </MenuItem>
             ))}
           </Menu>
@@ -62,5 +78,7 @@ export default function Navbar({username, avatar}: NavbarProps) {
         : <Button color="inherit" sx={{ml: 'auto'}}>Login</Button>}
       </Toolbar>
     </AppBar>
+    {popup && <Popup text={popup.text} title={popup.title} btnText={popup.btnText} />}
+    </NavbarContext.Provider>
   );
 }
