@@ -33,7 +33,7 @@ export const settings: ISetting[] = [
   {
     title: 'Logout',
     onClick: ({setPopup}) => {
-      setPopup({title: 'Logout', text, btnText: 'Stay'})
+      setPopup({title: 'Logout', text, btnText: 'Cancel'})
     }
   }
 ]

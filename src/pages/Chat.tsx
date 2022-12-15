@@ -1,12 +1,15 @@
 import Grid from '@mui/material/Grid';
-import { Footer, MessagesField } from '../components';
+import { Footer, MessagesField, Sidebar } from '../components';
 
 const Chat = () => {
   
   return (
-    <Grid container flex={1} maxHeight='100%' position='relative'>
-      <MessagesField />
-      <Footer />
+    <Grid container flex={1}>
+      <Sidebar />
+      <Grid container flex={1} position='relative'>
+        <MessagesField />
+        <Footer />
+      </Grid>
     </Grid>
   )
 }

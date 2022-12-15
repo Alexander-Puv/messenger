@@ -23,21 +23,26 @@ const MessagesField = () => {
         <Box key={msg.createdAt} m={1}>
           <Grid container sx={user?.uid === msg.uid ? {flexDirection: 'row-reverse'} : {}}>
             <Avatar src={msg.photoURL} />
-            <Box sx={user?.uid === msg.uid ?
-            {transform: 'translateX(-1px)', marginRight: '-1px'} :
-            {transform: 'translateX(1px)', marginRight: '1px'}}>
-              <svg viewBox="0 0 8 13" width="8" height="13">
-                <path opacity=".13" d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z" />
-                <path fill={user?.uid === msg.uid ? blue[200] : blueGrey[400]} d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z" />
-              </svg>
-            </Box>
+            {user?.uid === msg.uid ?
+              <Box sx={{transform: 'translateX(-1px)', marginRight: '-1px'}}>
+                <svg viewBox="0 0 8 13" width="8" height="13">
+                  <path fill={blue[200]} d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z" />
+                </svg>
+              </Box>
+            :
+              <Box sx={{transform: 'translateX(1px)', marginRight: '1px'}}>
+                <svg viewBox="0 0 8 13" height="13" width="8"  version="1.1">
+                  <path fill={blueGrey[400]} d="M1.533,2.568L8,11.193V0L2.812,0C1.042,0,0.474,1.156,1.533,2.568z" />
+                </svg>
+              </Box>
+            }
             <Box display='flex' flexDirection='column' gap={.5} p='4px 8px' alignItems='flex-end'
               sx={{
                 position: 'relative',
                 border: '1px solid ' + (user?.uid === msg.uid ? blue[200] : blueGrey[400]),
                 borderRadius: '7.5px',
                 borderTopRightRadius: user?.uid === msg.uid ? 0 : 'auto',
-                borderLeftRightRadius: user?.uid === msg.uid ? 'auto' : 0,
+                borderTopLeftRadius: user?.uid === msg.uid ? 'auto' : 0,
               }}
             >
               <Typography variant='caption' component="h4">{msg.displayName}</Typography>
