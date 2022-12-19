@@ -1,6 +1,6 @@
 import SearchIcon from '@mui/icons-material/Search';
 import { Avatar, Box, Card, CardHeader, IconButton, InputBase, Paper } from '@mui/material';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../MainConf';
 
@@ -22,9 +22,10 @@ const chats = [
 const Sidebar = () => {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
+  const [username, setUsername] = useState('')
 
   return (
-    <Box maxWidth={450} width='100%' display='flex' flexDirection='column' position='relative'>
+    <Box maxWidth={'35%'} width='100%' display='flex' flexDirection='column' position='relative'>
       {/* Search */}
       <Paper
         component="form"
@@ -34,7 +35,7 @@ const Sidebar = () => {
           sx={{ ml: 1, flex: 1 }}
           placeholder="Search for a chat"
         />
-        <IconButton type="button" sx={{ m: 'auto' }} aria-label="search">
+        <IconButton type="button" sx={{ m: 'auto' }} >
           <SearchIcon />
         </IconButton>
       </Paper>

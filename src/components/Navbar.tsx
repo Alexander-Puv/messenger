@@ -1,5 +1,5 @@
 import MenuIcon from '@mui/icons-material/Menu';
-import { AppBar, Avatar, Button, IconButton, Menu, MenuItem, Toolbar, Typography, Tooltip } from '@mui/material';
+import { AppBar, Avatar, Button, IconButton, Menu, MenuItem, Toolbar, Typography, Tooltip, Divider, Box } from '@mui/material';
 import { red } from '@mui/material/colors';
 import { useContext, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -8,6 +8,8 @@ import { settings } from '../utils/navbarSettings';
 import { createContext } from 'react'
 import Popup, { PopupProps } from './UI/Popup';
 import { Auth } from 'firebase/auth';
+import { Link } from 'react-router-dom';
+import { LOGIN_ROUTE, SIGNUP_ROUTE } from '../utils/consts';
 
 interface NavbarContextProps {
   popup: PopupProps | null,
@@ -75,7 +77,15 @@ export default function Navbar({username, avatar}: NavbarProps) {
             <Avatar src={user.photoURL ? user.photoURL : ''} alt={user.displayName ? user.displayName : ''} />
           </Tooltip>
         </>
-        : <Button color="inherit" sx={{ml: 'auto'}}>Login</Button>}
+        : <Box display='flex' ml='auto'>
+          <Button color="inherit">
+            <Link to={LOGIN_ROUTE}>Login</Link>
+          </Button>
+          <Divider orientation="vertical" flexItem sx={{m: '0 5px'}} />
+          <Button color="inherit">
+            <Link to={SIGNUP_ROUTE}>Signup</Link>
+          </Button>
+        </Box>}
       </Toolbar>
     </AppBar>
     {popup && <Popup text={popup.text} title={popup.title} btnText={popup.btnText} />}

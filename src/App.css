@@ -16,6 +16,11 @@
   display: none;
 }
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
 html, body, #root {
   width: 100vw;
   min-height: 100vh;

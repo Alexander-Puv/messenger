@@ -1,11 +1,15 @@
 import { Navigate } from 'react-router-dom';
-import { Chat, Login } from './pages/index';
-import { CHAT_ROUTE, LOGIN_ROUTE } from './utils/consts';
+import { Chat, Login, Signup } from './pages/index';
+import { CHAT_ROUTE, LOGIN_ROUTE, SIGNUP_ROUTE } from './utils/consts';
 
 export const publicRoutes = [
   {
     path: LOGIN_ROUTE,
     element: <Login />
+  },
+  {
+    path: SIGNUP_ROUTE,
+    element: <Signup />
   },
   {
     path: '*',

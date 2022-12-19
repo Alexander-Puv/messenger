@@ -3,34 +3,46 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import { grey } from '@mui/material/colors'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { useContext, useState } from 'react'
 import { FirebaseContext } from '../MainConf'
 import { Enter } from '../components/UI'
 
-const Login = () => {
+const Signup = () => {
   const {auth, firestore} = useContext(FirebaseContext)
+  const [email, setEmail] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [password, setPassword] = useState('')
+  const [photoURL, setPhotoURL] = useState('')
 
-  const emailLogin = () => {
+  const emailSignup = () => {
 
   }
 
-  const googleLogin = async () => {
+  const googleSignup = async () => {
     const provider = new GoogleAuthProvider()
     const {user} = await signInWithPopup(auth, provider)
+    
+    addDoc(collection(firestore, 'users'), {
+      uid: user.uid,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      email: user.email,
+      createdAt: serverTimestamp()
+    })
   }
   
   return (
     <Enter
       inputs={[
         {label: 'Login', value: displayName, onChange: setDisplayName},
-        {label: 'Password', value: password, onChange: setPassword}
+        {label: 'Email', value: email, onChange: setEmail},
+        {label: 'Password', value: password, onChange: setPassword},
       ]}
-      confirm={emailLogin}
-      gooole={googleLogin}
+      confirm={emailSignup}
+      gooole={googleSignup}
     />
   )
 }
 
-export default Login
+export default Signup
