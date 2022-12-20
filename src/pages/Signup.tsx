@@ -1,8 +1,4 @@
-import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
-import { grey } from '@mui/material/colors'
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithPopup } from 'firebase/auth'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { useContext, useState } from 'react'
 import { FirebaseContext } from '../MainConf'
@@ -13,17 +9,35 @@ const Signup = () => {
   const [email, setEmail] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [password, setPassword] = useState('')
-  const [photoURL, setPhotoURL] = useState('')
+  const [error, setError] = useState(false)
+  //const [photoURL, setPhotoURL] = useState('')
 
-  const emailSignup = () => {
+  const emailSignup = async () => {
+    const auth = getAuth();
 
+    try {
+      const res = createUserWithEmailAndPassword(auth, email, password)
+    
+      await addDoc(collection(firestore, 'users'), {
+        uid: (await res).user.uid,
+        displayName,
+        email,
+        createdAt: serverTimestamp()
+      })
+
+      await addDoc(collection(firestore, 'userChats'), {})
+    } catch (e) {
+      console.log(e);
+      
+      setError(true)
+    }
   }
 
   const googleSignup = async () => {
     const provider = new GoogleAuthProvider()
     const {user} = await signInWithPopup(auth, provider)
     
-    addDoc(collection(firestore, 'users'), {
+    await addDoc(collection(firestore, 'users'), {
       uid: user.uid,
       displayName: user.displayName,
       photoURL: user.photoURL,
@@ -35,12 +49,13 @@ const Signup = () => {
   return (
     <Enter
       inputs={[
-        {label: 'Login', value: displayName, onChange: setDisplayName},
+        {label: 'Display name', value: displayName, onChange: setDisplayName},
         {label: 'Email', value: email, onChange: setEmail},
         {label: 'Password', value: password, onChange: setPassword},
       ]}
       confirm={emailSignup}
       gooole={googleSignup}
+      error={error}
     />
   )
 }

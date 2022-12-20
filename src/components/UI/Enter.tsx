@@ -1,8 +1,8 @@
 import GoogleIcon from '@mui/icons-material/Google';
 import { Button, Grid, TextField, Typography, useTheme } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { LOGIN_ROUTE, SIGNUP_ROUTE } from '../../utils/consts';
 import { Link } from 'react-router-dom';
+import { LOGIN_ROUTE, SIGNUP_ROUTE } from '../../utils/consts';
 
 interface Input {
   label: string,
@@ -13,10 +13,11 @@ interface Input {
 interface EnterProps {
   inputs: Input[],
   confirm: (/* e?: React.MouseEvent<HTMLButtonElement, MouseEvent> */) => void,
-  gooole: () => void
+  gooole: () => void,
+  error: boolean
 }
 
-const Enter = ({inputs, confirm, gooole}: EnterProps) => {
+const Enter = ({inputs, confirm, gooole, error}: EnterProps) => {
   const theme = useTheme()
   const path = location.pathname.charAt(1).toUpperCase() + location.pathname.slice(2)
 
@@ -30,9 +31,11 @@ const Enter = ({inputs, confirm, gooole}: EnterProps) => {
             onChange={e => input.onChange(e.target.value)}
             key={input.label}
             sx={{mb: '10px'}}
+            type={input.label}
           />
         )}
         <Button sx={{m: '5px auto 0'}} variant='outlined' onClick={confirm}>{path}</Button>
+        {error && <Typography mt={1} alignSelf='center' color={theme.palette.error.main}>Somthing went wrong. Check the fields again</Typography>}
       </Grid>
       <Button sx={{m: 3, display: 'flex', alignSelf: 'center', alignItems: 'center'}} onClick={gooole}>
         <Typography>Or {path} with </Typography>

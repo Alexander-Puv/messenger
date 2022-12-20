@@ -1,19 +1,16 @@
-import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
-import { grey } from '@mui/material/colors'
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
 import { useContext, useState } from 'react'
 import { FirebaseContext } from '../MainConf'
 import { Enter } from '../components/UI'
 
 const Login = () => {
   const {auth, firestore} = useContext(FirebaseContext)
-  const [displayName, setDisplayName] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState(false)
 
-  const emailLogin = () => {
-
+  const emailLogin = async () => {
+    signInWithEmailAndPassword(auth, email, password)
   }
 
   const googleLogin = async () => {
@@ -24,11 +21,12 @@ const Login = () => {
   return (
     <Enter
       inputs={[
-        {label: 'Login', value: displayName, onChange: setDisplayName},
+        {label: 'Email', value: email, onChange: setEmail},
         {label: 'Password', value: password, onChange: setPassword}
       ]}
       confirm={emailLogin}
       gooole={googleLogin}
+      error={error}
     />
   )
 }
