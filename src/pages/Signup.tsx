@@ -1,5 +1,5 @@
 import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithPopup } from 'firebase/auth'
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { useContext, useState } from 'react'
 import { FirebaseContext } from '../MainConf'
 import { Enter } from '../components/UI'
@@ -10,22 +10,22 @@ const Signup = () => {
   const [displayName, setDisplayName] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(false)
-  //const [photoURL, setPhotoURL] = useState('')
 
   const emailSignup = async () => {
     const auth = getAuth();
 
     try {
-      const res = createUserWithEmailAndPassword(auth, email, password)
+      const {user} = await createUserWithEmailAndPassword(auth, email, password)
     
       await addDoc(collection(firestore, 'users'), {
-        uid: (await res).user.uid,
+        uid: user.uid,
         displayName,
         email,
+        photoURL: null,
         createdAt: serverTimestamp()
       })
 
-      await addDoc(collection(firestore, 'userChats'), {})
+      await setDoc(doc(firestore, 'userChats', user.uid), {})
     } catch (e) {
       console.log(e);
       
