@@ -44,6 +44,8 @@ const Signup = () => {
       email: user.email,
       createdAt: serverTimestamp()
     })
+
+    await setDoc(doc(firestore, 'userChats', user.uid), {})
   }
   
   return (

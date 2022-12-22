@@ -4,23 +4,8 @@ import { DocumentData, collection, doc, getDoc, getDocs, query, serverTimestamp,
 import { useContext, useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../MainConf';
-import { Loader } from './UI';
-import ChatCard from './UI/ChatCard';
-
-const chats = [
-  {id: 0, img: '', title: 'somebody0', content: 'smth0'},
-  {id: 1, img: '', title: 'somebody1', content: 'smth1'},
-  {id: 2, img: '', title: 'somebody2', content: 'smth2'},
-  {id: 3, img: '', title: 'somebody3', content: 'smth3'},
-  {id: 4, img: '', title: 'somebody4', content: 'smth4'},
-  {id: 5, img: '', title: 'somebody5', content: 'smth5'},
-  {id: 6, img: '', title: 'somebody6', content: 'smth6'},
-  {id: 7, img: '', title: 'somebody7', content: 'smth7'},
-  {id: 8, img: '', title: 'somebody8', content: 'smth8'},
-  {id: 9, img: '', title: 'somebody9', content: 'smth9'},
-  {id: 10, img: '', title: 'somebody10', content: 'smth10'},
-  {id: 11, img: '', title: 'somebody11', content: 'smth11'},
-]
+import { ChatCard, Loader } from './UI';
+import { UserChats } from './';
 
 const Sidebar = () => {
   const {auth, firestore} = useContext(FirebaseContext)
@@ -77,9 +62,11 @@ const Sidebar = () => {
       try {
         const res = await getDoc(doc(firestore, 'chats', combinedId))
         
+        // check if the chat exists, if not, create it
         if (!res.exists()) {
           await setDoc(doc(firestore, 'chats', combinedId), {messages: []})
 
+          // create user chats
           await updateDoc(doc(firestore, 'userChats', user.uid), {
             [combinedId + '.userInfo']: {
               uid: foundUser.uid,
@@ -127,16 +114,24 @@ const Sidebar = () => {
       </Paper>
       {/* Chats */}
       <Box sx={{overflowY: 'auto'}} position='absolute' top={64} bottom={0} left={15} right={0}>
+        {/* if the user is serching for somebody and the data is still loading, shows loader */}
         {loading ? <Box display='flex' alignItems='center'><Loader /></ Box> :
+          // if the user is found, show them
           foundUser ?
-            <ChatCard img={foundUser.photoURL} title={foundUser.displayName} content='No messages' onClick={handleSelect} />
+            <ChatCard
+              photoURL={foundUser.photoURL}
+              displayName={foundUser.displayName}
+              content=''
+              onClick={handleSelect}
+              anotherUser={foundUser}
+            />
           :
+            // if no user or some error occured, show error
             error ?
               <Box display='flex' justifyContent='center'><Typography>{error}</Typography></ Box>
             :
-              chats.map(chat =>
-                <ChatCard {...chat} key={chat.id} />
-              )
+              // if the user is not searching for anybody, show all their chats
+              <UserChats />
         }
       </Box>
     </Box>
