@@ -2,16 +2,19 @@ import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 
 import { useContext, useState } from 'react'
 import { FirebaseContext } from '../MainConf'
 import { Enter } from '../components/UI'
-import { doc, setDoc } from 'firebase/firestore'
 
 const Login = () => {
-  const {auth, firestore} = useContext(FirebaseContext)
+  const {auth} = useContext(FirebaseContext)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(false)
 
   const emailLogin = async () => {
-    await signInWithEmailAndPassword(auth, email, password)
+    try {
+      await signInWithEmailAndPassword(auth, email, password)
+    } catch (error) {
+      setError(true)
+    }
   }
 
   const googleLogin = async () => {

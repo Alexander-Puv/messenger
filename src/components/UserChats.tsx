@@ -2,8 +2,8 @@ import { DocumentData, doc, onSnapshot } from 'firebase/firestore'
 import { useContext, useEffect, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { FirebaseContext } from '../MainConf'
-import { ChatCard } from './UI'
 import { ChatContext } from '../reducer/ChatContext'
+import { ChatCard } from './UI'
 
 const UserChats = () => {
   const {auth, firestore} = useContext(FirebaseContext)
@@ -24,11 +24,11 @@ const UserChats = () => {
   }, [user?.uid])
 
   return <>
-    {chats && Object.entries(chats).map(chat =>
+    {chats && Object.entries(chats).sort((a, b) => b[1].date - a[1].date).map(chat =>
       <ChatCard
         displayName={chat[1].userInfo.displayName}
         photoURL={chat[1].userInfo.photoURL}
-        content=''
+        content={chat[1].lastMessage ? chat[1].lastMessage.value : ''}
         anotherUser={chat[1].userInfo}
         chosen={chatContext?.state.user?.uid === chat[1].userInfo.uid ? true : false}
         key={chat[0]}

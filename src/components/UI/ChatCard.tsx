@@ -30,7 +30,7 @@ const ChatCard = (props: ChatCardProps) => {
       sx={{
         mt: 1, mr: '9px' /* 15px (standard margin) - 6px (scrollbar) */,
         p: 2, display: 'flex',
-        backgroundColor: props.chosen ? blue[800] : '',
+        backgroundColor: props.chosen ? blue[700] : '',
         '&:first-of-type': {mt: 0},
         cursor: 'pointer',
       }}

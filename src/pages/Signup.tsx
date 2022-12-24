@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithPopup } from 'firebase/auth'
+import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithPopup, updateProfile } from 'firebase/auth'
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { useContext, useState } from 'react'
 import { FirebaseContext } from '../MainConf'
@@ -16,6 +16,7 @@ const Signup = () => {
 
     try {
       const {user} = await createUserWithEmailAndPassword(auth, email, password)
+      await updateProfile(user, {displayName})
     
       await addDoc(collection(firestore, 'users'), {
         uid: user.uid,
@@ -28,7 +29,6 @@ const Signup = () => {
       await setDoc(doc(firestore, 'userChats', user.uid), {})
     } catch (e) {
       console.log(e);
-      
       setError(true)
     }
   }

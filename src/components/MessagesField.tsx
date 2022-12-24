@@ -1,29 +1,42 @@
-import { AppBar, Avatar, Box, Grid, Typography } from '@mui/material';
+import { Avatar, Box, Grid, Typography } from '@mui/material';
 import { blue, blueGrey } from '@mui/material/colors';
-import { collection, orderBy, query } from 'firebase/firestore';
-import { useContext } from 'react';
+import { Timestamp, doc, onSnapshot } from 'firebase/firestore';
+import { useContext, useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { FirebaseContext } from '../MainConf';
-import { Loader } from '../components/UI';
 import { ChatContext } from '../reducer/ChatContext';
+
+interface msg {
+  uid: string,
+  displayName: string,
+  photoURL: string,
+  text: string,
+  createdAt: Timestamp
+}
 
 const MessagesField = () => {
   const {auth, firestore} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
-  const [messages, loading] = useCollectionData(query(collection(firestore, 'messages'), orderBy("createdAt")))
-  // const chatContext = useContext(ChatContext)
+  const chatContext = useContext(ChatContext)
+  const [messages, setMessages] = useState([])
 
-  if (loading) {
-    return <Loader />
-  }
+  useEffect(() => {
+    if (chatContext?.state) {
+      const unsub = onSnapshot(doc(firestore, "chats", chatContext.state.chatId), (doc) => {
+        doc.exists() && setMessages(doc.data().messages)
+      });
+
+      return () => {
+        unsub()
+      }
+    }
+  }, [chatContext?.state.user?.uid])
 
   return <>
-    {/* <AppBar></AppBar> */}
     <Box sx={{overflowY: 'auto'}} width='100%' position='absolute' top={0} bottom='56px'>
       <Box height='100%'>
-        {messages?.map(msg =>
-          <Box key={msg.createdAt} m={1}>
+        {messages && messages.map((msg: msg) =>
+          <Box key={msg.createdAt.nanoseconds} m={1}>
             <Grid container sx={user?.uid === msg.uid ? {flexDirection: 'row-reverse'} : {}}>
               <Avatar src={msg.photoURL} />
               {user?.uid === msg.uid ?
@@ -39,7 +52,7 @@ const MessagesField = () => {
                   </svg>
                 </Box>
               }
-              <Box display='flex' flexDirection='column' gap={.5} p='4px 8px' alignItems='flex-end'
+              <Box display='flex' flexDirection='column' gap={.5} p='4px 8px' alignItems={user?.uid === msg.uid ? 'flex-end' : 'flex-start'}
                 sx={{
                   position: 'relative',
                   border: '1px solid ' + (user?.uid === msg.uid ? blue[200] : blueGrey[400]),

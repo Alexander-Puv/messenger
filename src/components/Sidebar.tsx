@@ -4,8 +4,8 @@ import { DocumentData, collection, doc, getDoc, getDocs, query, serverTimestamp,
 import { useContext, useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../MainConf';
-import { ChatCard, Loader } from './UI';
 import { UserChats } from './';
+import { ChatCard, Loader } from './UI';
 
 const Sidebar = () => {
   const {auth, firestore} = useContext(FirebaseContext)
@@ -14,6 +14,7 @@ const Sidebar = () => {
   const [foundUser, setFoundUser] = useState<null | DocumentData>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<false | string>(false)
+  console.log(foundUser);
 
   useEffect(() => {
     // remove error and found user if search input is empty
