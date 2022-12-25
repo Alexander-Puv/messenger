@@ -14,7 +14,7 @@ export interface IChatContextProvider {
 
 export interface IChatState {
   chatId: string,
-  user: {uid: string} | null
+  user: DocumentData | null
 }
 
 
@@ -26,7 +26,7 @@ export enum ChatActionTypes {
 interface ChangeUserAction {
   type: ChatActionTypes.CHANGE_USER,
   payload: {
-    currentUser: {uid: string},
+    currentUser: DocumentData,
     anotherUser: DocumentData,
   }
 }
