@@ -19,12 +19,7 @@ interface NavbarContextProps {
 
 export const NavbarContext = createContext<NavbarContextProps | null>(null)
 
-interface NavbarProps {
-  username: string,
-  avatar: string,
-}
-
-export default function Navbar({username, avatar}: NavbarProps) {
+export default function Navbar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [popup, setPopup] = useState<null | PopupProps>(null);
   const {auth} = useContext(FirebaseContext)

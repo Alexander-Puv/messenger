@@ -1,8 +1,12 @@
+import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
+import { DefaultComponentProps, OverridableTypeMap } from '@mui/material/OverridableComponent'
 
-const Loading = () => {
+const Loading = (props: DefaultComponentProps<OverridableTypeMap>) => {
   return (
-    <CircularProgress sx={{m: 'auto'}} />
+    <Box {...props} m='auto'>
+      <CircularProgress />
+    </Box>
   )
 }
 

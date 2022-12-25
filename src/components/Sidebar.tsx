@@ -14,7 +14,6 @@ const Sidebar = () => {
   const [foundUser, setFoundUser] = useState<null | DocumentData>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<false | string>(false)
-  console.log(foundUser);
 
   useEffect(() => {
     // remove error and found user if search input is empty

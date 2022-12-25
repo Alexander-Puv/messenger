@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from 'react'
+import React, { createContext, useReducer, useState } from 'react'
 import { ChatContextProps, IChatContextProvider } from './ChatReducerTypes'
 import { ChatReducer, initial_state } from './ChatReducer'
 

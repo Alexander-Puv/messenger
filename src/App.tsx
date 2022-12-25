@@ -9,10 +9,8 @@ import { Loader } from './components/UI'
 import { FirebaseContext } from './MainConf'
 
 function App() {
-  const [username, setUsername] = useState('');
-  const [avatar, setAvatar] = useState('');
   const {auth} = useContext(FirebaseContext)
-  const [user, loading, error] = useAuthState(auth)
+  const [user, loading] = useAuthState(auth)
   const theme = useTheme()
 
   return (
@@ -38,7 +36,7 @@ function App() {
         {loading ? <Loader />
         :
           <BrowserRouter>
-            <Navbar username={username} avatar={avatar} />
+            <Navbar />
             <Box component='main' sx={{
               flex: 1,
               display: 'flex',
