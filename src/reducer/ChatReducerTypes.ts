@@ -1,5 +1,4 @@
 import React from 'react'
-import { User } from "firebase/auth"
 import { DocumentData } from 'firebase/firestore'
 
 export interface ChatContextProps {
@@ -15,7 +14,7 @@ export interface IChatContextProvider {
 
 export interface IChatState {
   chatId: string,
-  user: User | null
+  user: {uid: string} | null
 }
 
 
@@ -27,7 +26,7 @@ export enum ChatActionTypes {
 interface ChangeUserAction {
   type: ChatActionTypes.CHANGE_USER,
   payload: {
-    currentUser: User,
+    currentUser: {uid: string},
     anotherUser: DocumentData,
   }
 }
