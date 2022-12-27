@@ -1,6 +1,5 @@
 import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Avatar, Button, IconButton, Menu, MenuItem, Toolbar, Typography, Tooltip, Divider, Box } from '@mui/material';
-import { red } from '@mui/material/colors';
 import { useContext, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../MainConf';
@@ -10,6 +9,7 @@ import Popup, { PopupProps } from './UI/Popup';
 import { Auth } from 'firebase/auth';
 import { Link } from 'react-router-dom';
 import { LOGIN_ROUTE, SIGNUP_ROUTE } from '../utils/consts';
+import { redColor } from '../utils/colors';
 
 interface NavbarContextProps {
   popup: PopupProps | null,
@@ -62,7 +62,7 @@ export default function Navbar() {
           >
             {settings.map((setting) => (
               <MenuItem key={setting.title} onClick={() => {handleCloseUserMenu(); setting.onClick({setPopup})}}>
-                <Typography textAlign="center" sx={setting.title === 'Logout' ? {fontWeight: '500', color: red[700]} : {}}>
+                <Typography textAlign="center" sx={setting.title === 'Logout' ? {fontWeight: '500', color: redColor} : {}}>
                   {setting.title}
                 </Typography>
               </MenuItem>
