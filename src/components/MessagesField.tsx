@@ -7,18 +7,24 @@ import { FirebaseContext } from '../MainConf';
 import { ChatContext } from '../reducer/ChatContext';
 import { Loader, Message } from './UI';
 
-export interface Msg {
+interface audioData {
+  audioUrl: string,
+  audioDuration: number
+}
+
+export interface IMsg {
   uid: string,
   displayName: string,
   photoURL: string,
-  text: string,
+  text: string | null,
+  audioData: audioData | null,
   createdAt: Timestamp
 }
 
 const MessagesField = () => {
   const {firestore} = useContext(FirebaseContext)
   const chatContext = useContext(ChatContext)
-  const [messages, setMessages] = useState<Msg[] | []>([])
+  const [messages, setMessages] = useState<IMsg[] | []>([])
 
   useEffect(() => {
     if (chatContext?.state) {

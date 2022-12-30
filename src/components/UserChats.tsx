@@ -28,7 +28,12 @@ const UserChats = () => {
       <ChatCard
         displayName={chat[1].userInfo.displayName}
         photoURL={chat[1].userInfo.photoURL}
-        content={chat[1].lastMessage ? chat[1].lastMessage.value : ''}
+        content={
+          chat[1].lastMessage ? // if there is last message
+          chat[1].lastMessage.value ?? // check is there text
+          chat[1].lastMessage.audioData // otherwise check is there audio
+          : '' // if no messages - no comments
+        }
         anotherUser={chat[1].userInfo}
         chosen={chatContext?.state.user?.uid === chat[1].userInfo.uid ? true : false}
         key={chat[0]}

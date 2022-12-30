@@ -3,22 +3,33 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { blue, blueGrey } from '@mui/material/colors'
-import { useContext, useRef, useEffect } from 'react'
-import { Msg } from '../MessagesField'
-import { FirebaseContext } from '../../MainConf'
+import { useContext, useEffect, useRef } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
+import { FirebaseContext } from '../../MainConf'
+import { IMsg } from '../MessagesField'
+import Button from '@mui/material/Button'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
-const Message = (msg: Msg) => {
+const Message = (msg: IMsg) => {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
-  const ref = useRef<HTMLElement | null>(null);
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  console.log(msg);
+  
 
   useEffect(() => {
-    ref.current?.scrollIntoView({behavior: 'auto'})
+    boxRef.current?.scrollIntoView({behavior: 'auto'})
   }, [msg])
 
+  const playAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+    }
+  }
+
   return (
-    <Box m={1} ref={ref}>
+    <Box m={1} ref={boxRef}>
       <Grid container sx={user?.uid === msg.uid ? {flexDirection: 'row-reverse'} : {}}>
         <Avatar src={msg.photoURL} />
         {user?.uid === msg.uid ?
@@ -44,7 +55,14 @@ const Message = (msg: Msg) => {
           }}
         >
           <Typography variant='caption' component="h4">{msg.displayName}</Typography>
-          <Typography>{msg.text}</Typography>
+          {msg.text && <Typography>{msg.text}</Typography>}
+          {msg.audioData &&
+            <Box>
+              <audio ref={audioRef} src={msg.audioData.audioUrl} />
+              <Button onClick={playAudio}><PlayArrowIcon /></Button>
+              <Typography>{msg.audioData.audioDuration}</Typography>
+            </Box>
+          }
         </Box>
       </Grid>
     </Box>

@@ -9,45 +9,55 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../MainConf';
 import { ChatContext } from '../reducer/ChatContext';
 import { redColor } from '../utils/colors';
-import Button from '@mui/material/Button';
 
 const Footer = () => {
   const {auth, firestore} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const [value, setValue] = useState('')
-  // const [stream, setStream] = useState<MediaStream | null>(null)
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null)
   const [isRecording, setIsRecording] = useState(false)
   const chatContext = useContext(ChatContext)
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const theme = useTheme()
-  console.log(audioRef);
 
-  const SendMessage = async () => {
-    if (value && chatContext?.state && chatContext.state.user && user){
+  const SendMessage = async (audioUrl?: string, audioDuration?: number) => {
+    if (chatContext?.state && chatContext.state.user && user){
       const val = value
       setValue('')
       isRecording && setIsRecording(false)
 
+      // add message
       await updateDoc(doc(firestore, 'chats', chatContext.state.chatId), {
         messages: arrayUnion({
           uid: user.uid,
           displayName: user.displayName,
           photoURL: user.photoURL,
-          text: val,
+          text: audioUrl ? null : val,
+          audioData: audioUrl ? {
+            audioUrl,
+            audioDuration
+          } : null,
           createdAt: Timestamp.now()
         })
       })
       
+      // change users last message
       await updateDoc(doc(firestore, 'userChats', chatContext.state.user.uid), {
         [chatContext.state.chatId + '.lastMessage']: {
-          value: val
+          value: audioUrl ? null : val,
+          audioData: audioUrl ? {
+            audioUrl,
+            audioDuration
+          } : null
         },
         [chatContext.state.chatId + '.date']: serverTimestamp()
       })
       await updateDoc(doc(firestore, 'userChats', user.uid), {
         [chatContext.state.chatId + '.lastMessage']: {
-          value: val
+          value: audioUrl ? null : val,
+          audioData: audioUrl ? {
+            audioUrl,
+            audioDuration
+          } : null
         },
         [chatContext.state.chatId + '.date']: serverTimestamp()
       })
@@ -57,49 +67,49 @@ const Footer = () => {
   const StartRecording = async () => {
     setIsRecording(true)
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({audio: true});
-      const recorder = new MediaRecorder(stream);
-      setMediaRecorder(recorder);
-      recorder.start();
+      const stream = await navigator.mediaDevices.getUserMedia({audio: true})
+      const recorder = new MediaRecorder(stream)
+      setMediaRecorder(recorder)
+      recorder.start()
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
-  const StopRecording = async () => {
+  const StopRecording = async (send?: true) => {
     if (mediaRecorder) { // it is always false here but TS doesn't understand it
       setIsRecording(false)
-      mediaRecorder.stop();
+      mediaRecorder.stop()
 
-      const audioChunks: Blob[] = [];
-      mediaRecorder.ondataavailable = e => {
-        audioChunks.push(e.data)
-      }
+      if (send) {
+        const audioChunks: Blob[] = []
+        mediaRecorder.ondataavailable = e => {
+          audioChunks.push(e.data)
+        }
 
-      mediaRecorder.onstop = () => {
-        if (!audioRef.current) return // it's also always false here
-        const audioBlob = new Blob(audioChunks);
-        const audioUrl = URL.createObjectURL(audioBlob);
-        audioRef.current.src = audioUrl;
-        audioRef.current.play();
-        
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks)
+          const audioUrl = URL.createObjectURL(audioBlob)
+
+          const audio = new Audio(audioUrl)
+          audio.onloadedmetadata = () => {
+            console.log(audio.duration);
+            SendMessage(audioUrl, audio.duration)
+          }
+        }
       }
     }
   }
-
-  const playAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.play();
-    }
-  }
-console.log(audioRef.current?.currentSrc);
-console.log(audioRef.current?.src);
 
   return (
     <Grid
       container alignSelf='flex-end'
       component='footer' position='absolute'
-      sx={{bottom: 0, right: 0, /* background: theme.palette.background.default */}}
+      sx={{
+        bottom: 0, right: 0,
+        background: theme.palette.background.default,
+        backgroundImage: 'linear-gradient(rgba(255 255 255 / 0.02), rgba(255 255 255 / 0.02))'
+      }}
       p={1}
     >
       <TextField
@@ -116,8 +126,6 @@ console.log(audioRef.current?.src);
         }}}
       />
       <Box display='flex' alignItems='flex-end'>
-        <audio ref={audioRef} />
-        <Button onClick={playAudio} sx={{display: 'absolute', width: '50vw', height: '50vh', transform: 'translate(-50vw, -50vh)', background: 'red'}}></Button>
         {value ? // if the user wrote somthing, shows send button
           <IconButton onClick={() => SendMessage()} sx={{color: theme.palette.primary.main}}>
             <SendIcon />
@@ -133,7 +141,7 @@ console.log(audioRef.current?.src);
                 <StopIcon />
               </IconButton>
               <Typography></Typography>
-              <IconButton onClick={() => SendMessage()} sx={{color: theme.palette.primary.main}}>
+              <IconButton onClick={() => StopRecording(true)} sx={{color: theme.palette.primary.main}}>
                 <SendIcon />
               </IconButton>
             </Box>
