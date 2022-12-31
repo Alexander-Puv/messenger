@@ -15,8 +15,6 @@ const Message = (msg: IMsg) => {
   const [user] = useAuthState(auth)
   const boxRef = useRef<HTMLDivElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  console.log(msg);
-  
 
   useEffect(() => {
     boxRef.current?.scrollIntoView({behavior: 'auto'})

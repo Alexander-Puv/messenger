@@ -1,11 +1,9 @@
-import { Avatar, Box, Grid, Typography } from '@mui/material';
-import { blue, blueGrey } from '@mui/material/colors';
+import Box from '@mui/material/Box';
 import { Timestamp, doc, onSnapshot } from 'firebase/firestore';
-import { useContext, useEffect, useRef, useState } from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { useContext, useEffect, useState } from 'react';
 import { FirebaseContext } from '../MainConf';
 import { ChatContext } from '../reducer/ChatContext';
-import { Loader, Message } from './UI';
+import { Message } from './UI';
 
 interface audioData {
   audioUrl: string,

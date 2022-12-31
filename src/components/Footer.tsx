@@ -93,8 +93,16 @@ const Footer = () => {
 
           const audio = new Audio(audioUrl)
           audio.onloadedmetadata = () => {
-            console.log(audio.duration);
-            SendMessage(audioUrl, audio.duration)
+            if (audio.duration == Infinity) {
+              audio.currentTime = 1e101;
+              audio.ontimeupdate = () => {
+                audio.ontimeupdate = () => {
+                  SendMessage(audioUrl, audio.duration.toFixed(2)); // Wut?
+                }
+                audio.currentTime = 0;
+              }
+            }
+            
           }
         }
       }
