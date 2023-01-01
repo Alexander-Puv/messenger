@@ -4,6 +4,9 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { FirebaseContext } from '../MainConf'
 import { ChatContext } from '../reducer/ChatContext'
 import { ChatCard } from './UI'
+import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
+import Box from '@mui/material/Box/Box'
+import { Typography } from '@mui/material'
 
 const UserChats = () => {
   const {auth, firestore} = useContext(FirebaseContext)
@@ -31,7 +34,12 @@ const UserChats = () => {
         content={
           chat[1].lastMessage ? // if there is last message
           chat[1].lastMessage.value ?? // check is there text
-          chat[1].lastMessage.audioData // otherwise check is there audio
+          <Box display='flex' alignItems='flex-end'>
+            <KeyboardVoiceIcon fontSize='small' />
+            <Typography fontSize='inherit' lineHeight='1'>
+              {chat[1].lastMessage.audioData.audioDuration}
+            </Typography>
+          </Box> // otherwise audio
           : '' // if no messages - no comments
         }
         anotherUser={chat[1].userInfo}

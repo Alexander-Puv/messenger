@@ -19,7 +19,7 @@ const Footer = () => {
   const chatContext = useContext(ChatContext)
   const theme = useTheme()
 
-  const SendMessage = async (audioUrl?: string, audioDuration?: number) => {
+  const SendMessage = async (audioUrl?: string, audioDuration?: string) => {
     if (chatContext?.state && chatContext.state.user && user){
       const val = value
       setValue('')
@@ -43,9 +43,8 @@ const Footer = () => {
       // change users last message
       await updateDoc(doc(firestore, 'userChats', chatContext.state.user.uid), {
         [chatContext.state.chatId + '.lastMessage']: {
-          value: audioUrl ? null : val,
-          audioData: audioUrl ? {
-            audioUrl,
+          value: audioDuration ? null : val,
+          audioData: audioDuration ? {
             audioDuration
           } : null
         },
@@ -53,9 +52,8 @@ const Footer = () => {
       })
       await updateDoc(doc(firestore, 'userChats', user.uid), {
         [chatContext.state.chatId + '.lastMessage']: {
-          value: audioUrl ? null : val,
-          audioData: audioUrl ? {
-            audioUrl,
+          value: audioDuration ? null : val,
+          audioData: audioDuration ? {
             audioDuration
           } : null
         },
@@ -77,7 +75,7 @@ const Footer = () => {
   }
 
   const StopRecording = async (send?: true) => {
-    if (mediaRecorder) { // it is always false here but TS doesn't understand it
+    if (mediaRecorder) { // it is always true here but TS doesn't understand it
       setIsRecording(false)
       mediaRecorder.stop()
 
@@ -97,7 +95,7 @@ const Footer = () => {
               audio.currentTime = 1e101;
               audio.ontimeupdate = () => {
                 audio.ontimeupdate = () => {
-                  SendMessage(audioUrl, audio.duration.toFixed(2)); // Wut?
+                  SendMessage(audioUrl, audio.duration.toFixed(2).toString().replace('.', ':'));
                 }
                 audio.currentTime = 0;
               }

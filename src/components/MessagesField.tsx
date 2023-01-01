@@ -7,7 +7,7 @@ import { Message } from './UI';
 
 interface audioData {
   audioUrl: string,
-  audioDuration: number
+  audioDuration: string
 }
 
 export interface IMsg {
