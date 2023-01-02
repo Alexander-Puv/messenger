@@ -6,25 +6,17 @@ import { blue, blueGrey } from '@mui/material/colors'
 import { useContext, useEffect, useRef } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { FirebaseContext } from '../../MainConf'
-import { IMsg } from '../MessagesField'
-import Button from '@mui/material/Button'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { IMsg } from '../../types/messageTypes'
+import {VoiceMessage} from './'
 
 const Message = (msg: IMsg) => {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const boxRef = useRef<HTMLDivElement | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     boxRef.current?.scrollIntoView({behavior: 'auto'})
   }, [msg])
-
-  const playAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.play();
-    }
-  }
 
   return (
     <Box m={1} ref={boxRef}>
@@ -54,13 +46,7 @@ const Message = (msg: IMsg) => {
         >
           <Typography variant='caption' component="h4">{msg.displayName}</Typography>
           {msg.text && <Typography>{msg.text}</Typography>}
-          {msg.audioData &&
-            <Box>
-              <audio ref={audioRef} src={msg.audioData.audioUrl} />
-              <Button onClick={playAudio}><PlayArrowIcon /></Button>
-              <Typography>{msg.audioData.audioDuration}</Typography>
-            </Box>
-          }
+          {msg.audioData && <VoiceMessage {...msg.audioData} />}
         </Box>
       </Grid>
     </Box>

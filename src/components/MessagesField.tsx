@@ -1,23 +1,10 @@
 import Box from '@mui/material/Box';
-import { Timestamp, doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
 import { FirebaseContext } from '../MainConf';
 import { ChatContext } from '../reducer/ChatContext';
+import { IMsg } from '../types/messageTypes';
 import { Message } from './UI';
-
-interface audioData {
-  audioUrl: string,
-  audioDuration: string
-}
-
-export interface IMsg {
-  uid: string,
-  displayName: string,
-  photoURL: string,
-  text: string | null,
-  audioData: audioData | null,
-  createdAt: Timestamp
-}
 
 const MessagesField = () => {
   const {firestore} = useContext(FirebaseContext)
