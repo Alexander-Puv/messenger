@@ -2,9 +2,9 @@ import { Avatar, Card, CardHeader } from '@mui/material'
 import { DocumentData } from 'firebase/firestore'
 import { useContext } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { FirebaseContext } from '../../MainConf'
-import { ChatContext } from '../../reducer/ChatContext'
-import { ChatActionTypes } from '../../reducer/ChatReducerTypes'
+import { FirebaseContext } from '../../../../MainConf'
+import { ChatContext } from '../../../../reducer/ChatContext'
+import { ChatActionTypes } from '../../../../reducer/ChatReducerTypes'
 import { blue } from '@mui/material/colors'
 
 interface ChatCardProps {

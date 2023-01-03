@@ -1,9 +1,9 @@
 import { DocumentData, doc, onSnapshot } from 'firebase/firestore'
 import { useContext, useEffect, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { FirebaseContext } from '../MainConf'
-import { ChatContext } from '../reducer/ChatContext'
-import { ChatCard } from './UI'
+import { FirebaseContext } from '../../../../MainConf'
+import { ChatContext } from '../../../../reducer/ChatContext'
+import { ChatCard } from './'
 import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
 import Box from '@mui/material/Box/Box'
 import { Typography } from '@mui/material'

@@ -1,9 +1,8 @@
 import AppRouter from './AppRouter'
 import Navbar from './Navbar'
-import Footer from './Footer'
-import MessagesField from './MessagesField'
-import Sidebar from './Sidebar'
-import UserChats from './UserChats'
+import Footer from './Chat/Footer'
+import MessagesField from './Chat/MessagesField'
+import Sidebar from './Chat/Sidebar'
 
 export {
   AppRouter,
@@ -11,5 +10,4 @@ export {
   Footer,
   MessagesField,
   Sidebar,
-  UserChats
 }

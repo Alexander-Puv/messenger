@@ -5,9 +5,9 @@ import Typography from '@mui/material/Typography'
 import { blue, blueGrey } from '@mui/material/colors'
 import { useContext, useEffect, useRef } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { FirebaseContext } from '../../MainConf'
-import { IMsg } from '../../types/messageTypes'
-import {VoiceMessage} from './'
+import { FirebaseContext } from '../../../../MainConf'
+import { IMsg } from '../../../../types/messageTypes'
+import { VoiceMessage } from '.'
 
 const Message = (msg: IMsg) => {
   const {auth} = useContext(FirebaseContext)

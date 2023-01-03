@@ -3,9 +3,9 @@ import { Box, IconButton, InputBase, Paper, Typography } from '@mui/material';
 import { DocumentData, collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { FirebaseContext } from '../MainConf';
-import { UserChats } from './';
-import { ChatCard, Loader } from './UI';
+import { FirebaseContext } from '../../../MainConf';
+import { UserChats, ChatCard } from './components';
+import { Loader } from '../../UI';
 
 const Sidebar = () => {
   const {auth, firestore} = useContext(FirebaseContext)

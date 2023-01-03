@@ -1,10 +1,10 @@
 import Box from '@mui/material/Box';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
-import { FirebaseContext } from '../MainConf';
-import { ChatContext } from '../reducer/ChatContext';
-import { IMsg } from '../types/messageTypes';
-import { Message } from './UI';
+import { FirebaseContext } from '../../../MainConf';
+import { ChatContext } from '../../../reducer/ChatContext';
+import { IMsg } from '../../../types/messageTypes';
+import { Message } from './components';
 
 const MessagesField = () => {
   const {firestore} = useContext(FirebaseContext)

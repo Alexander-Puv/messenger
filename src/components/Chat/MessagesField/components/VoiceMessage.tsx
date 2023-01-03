@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Slider from '@mui/material/Slider';
 import { useRef, useState } from 'react';
-import { audioData } from '../../types/messageTypes';
+import { audioData } from '../../../../types/messageTypes';
 
 const VoiceMessage = (audioData: audioData) => {
   const [isListening, setIsListening] = useState(false)
@@ -42,7 +42,7 @@ const VoiceMessage = (audioData: audioData) => {
       <Slider 
         value={sliderValue}
         min={0}
-        max={duration}
+        max={duration * 100}
         onChange={(_, value) => setSliderValue(value as number)}
         size='small'
         sx={{width: 200, m: '0 12px 0 18px'}}
