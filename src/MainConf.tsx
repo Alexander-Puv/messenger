@@ -1,9 +1,11 @@
-import { Experimental_CssVarsProvider as MUIThemes} from '@mui/material'
-import App from './App'
+import { Experimental_CssVarsProvider as MUIThemes } from '@mui/material'
 import { FirebaseApp, initializeApp } from "firebase/app"
 import { Auth, getAuth } from "firebase/auth"
+import { Database, getDatabase } from "firebase/database"
 import { Firestore, getFirestore } from "firebase/firestore"
 import { createContext } from 'react'
+import App from './App'
+import { FirebaseStorage, getStorage } from 'firebase/storage'
 
 const app = initializeApp({
   apiKey: "AIzaSyBoNCV_Y8COx2hhOwaiTAf3LhzxlM-VxMU",
@@ -16,20 +18,24 @@ const app = initializeApp({
 })
 const firestore = getFirestore(app)
 const auth = getAuth(app)
+const database = getDatabase();
+const storage = getStorage();
 
 interface FirebaseContextProps {
   app: FirebaseApp,
   firestore: Firestore,
-  auth: Auth
+  auth: Auth,
+  database: Database,
+  storage: FirebaseStorage
 }
 
-export const FirebaseContext = createContext<FirebaseContextProps>({app, firestore, auth})
+export const FirebaseContext = createContext<FirebaseContextProps>({app, firestore, auth, database, storage})
 
 const MainConf = () => {
   return (
     <MUIThemes defaultMode="dark">
       <FirebaseContext.Provider value={{
-        app, firestore, auth
+        app, firestore, auth, database, storage
       }}>
         <App />
       </FirebaseContext.Provider>

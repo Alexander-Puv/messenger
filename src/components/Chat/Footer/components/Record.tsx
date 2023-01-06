@@ -1,19 +1,26 @@
+import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
 import SendIcon from '@mui/icons-material/Send';
 import StopIcon from '@mui/icons-material/Stop';
-import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
 import { Box, IconButton, Typography } from '@mui/material';
 import useTheme from '@mui/material/styles/useTheme';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { redColor } from '../../../../utils/colors';
+import { getDownloadURL, ref } from 'firebase/storage'
+// import { child, push, ref } from 'firebase/database';
+import { FirebaseContext } from '../../../../MainConf';
+import { audioData } from '../../../../types/messageTypes';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 interface RecordProps {
   isRecording: boolean,
   setIsRecording: (isRecording: boolean) => void,
-  SendMessage: Function
+  SendMessage: (audioData: audioData) => void
 }
 
 const Record = ({isRecording, setIsRecording, SendMessage}: RecordProps) => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null)
+  const {storage, auth} = useContext(FirebaseContext)
+  const [user] = useAuthState(auth)
   const theme = useTheme()
 
   const StartRecording = async () => {
@@ -45,16 +52,46 @@ const Record = ({isRecording, setIsRecording, SendMessage}: RecordProps) => {
 
           const audio = new Audio(audioUrl)
           audio.onloadedmetadata = () => {
-            if (audio.duration == Infinity) {
+            if (audio.duration === Infinity) {
               audio.currentTime = 1e101;
               audio.ontimeupdate = () => {
-                audio.ontimeupdate = () => {
-                  SendMessage(audioUrl, Math.floor(audio.duration).toString().replace('.', ':'));
+                audio.ontimeupdate = async () => {
+                  const allSeconds = Math.floor(audio.duration)
+                  const minutes = Math.floor(allSeconds / 60)
+                  const seconds = allSeconds - minutes * 60
+          
+                  const audioRef = ref(storage, 'chats')
+                  await getDownloadURL(audioRef).then(url => {
+                    console.log(url);
+                    
+                  })
+                    
+                  // SendMessage({audioUrl: audioRef.toString(), audioDuration: `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`})
+                  /* console.log(audioRef);
+                  console.log(audioRef.toString());
+                  await push(child(audioRef, 'messages'), {
+                    messages: arrayUnion({
+                      uid: user.uid,
+                      displayName: user.displayName,
+                      photoURL: user.photoURL,
+                      audioData: {
+                        audioUrl: audioRef.toString(),
+                        audioDuration: `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+                      },
+                      createdAt: Timestamp.now()
+                    })
+                  }) */
+                  /* getDownloadURL(audioRef).then(url => {
+                    console.log(audioRef);
+                    console.log(url);
+                    SendMessage({audioUrl: url, audioDuration: `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`})
+                  }).catch(e => {
+                    console.log(e);
+                  }) */
                 }
                 audio.currentTime = 0;
               }
             }
-            
           }
         }
       }

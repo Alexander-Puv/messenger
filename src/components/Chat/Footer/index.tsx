@@ -7,6 +7,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../../../MainConf';
 import { ChatContext } from '../../../reducer/ChatContext';
 import { Record } from './components';
+import { audioData } from '../../../types/messageTypes';
 
 const Footer = () => {
   const {auth, firestore} = useContext(FirebaseContext)
@@ -16,7 +17,7 @@ const Footer = () => {
   const chatContext = useContext(ChatContext)
   const theme = useTheme()
 
-  const SendMessage = async (audioUrl?: string, audioDuration?: string) => {
+  const SendMessage = async (audioData?: audioData) => {
     if (chatContext?.state && chatContext.state.user && user){
       const val = value
       setValue('')
@@ -28,10 +29,10 @@ const Footer = () => {
           uid: user.uid,
           displayName: user.displayName,
           photoURL: user.photoURL,
-          text: audioUrl ? null : val,
-          audioData: audioUrl ? {
-            audioUrl,
-            audioDuration
+          text: audioData ? null : val,
+          audioData: audioData ? {
+            audioUrl: audioData.audioUrl,
+            audioDuration: audioData.audioDuration
           } : null,
           createdAt: Timestamp.now()
         })
@@ -40,18 +41,18 @@ const Footer = () => {
       // change users last message
       await updateDoc(doc(firestore, 'userChats', chatContext.state.user.uid), {
         [chatContext.state.chatId + '.lastMessage']: {
-          value: audioDuration ? null : val,
-          audioData: audioDuration ? {
-            audioDuration
+          value: audioData ? null : val,
+          audioData: audioData ? {
+            audioDuration: audioData.audioDuration
           } : null
         },
         [chatContext.state.chatId + '.date']: serverTimestamp()
       })
       await updateDoc(doc(firestore, 'userChats', user.uid), {
         [chatContext.state.chatId + '.lastMessage']: {
-          value: audioDuration ? null : val,
-          audioData: audioDuration ? {
-            audioDuration
+          value: audioData ? null : val,
+          audioData: audioData ? {
+            audioDuration: audioData.audioDuration
           } : null
         },
         [chatContext.state.chatId + '.date']: serverTimestamp()
