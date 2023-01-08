@@ -1,10 +1,19 @@
 import React from 'react'
-import { DocumentData } from 'firebase/firestore'
+import { DocumentData, Timestamp } from 'firebase/firestore'
 
 export interface ChatContextProps {
   state: IChatState,
-  dispatch: React.Dispatch<ChatActionType>
+  dispatch: React.Dispatch<ChatActionType>,
+  loadingMessage: LoadingMessage,
+  setLoadingMessage: (prop: LoadingMessage) => void
 }
+
+interface ILoadingMessage {
+  duration?: string,
+  text?: string,
+  createdAt: Timestamp
+}
+export type LoadingMessage = ILoadingMessage | null
 
 export interface IChatContextProvider {
   children: React.ReactNode

@@ -5,8 +5,8 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { BrowserRouter } from 'react-router-dom'
 import './App.css'
 import { AppRouter, Navbar } from './components'
-import { Loader } from './components/UI'
 import { FirebaseContext } from './MainConf'
+import CircularProgress from '@mui/material/CircularProgress'
 
 function App() {
   const {auth} = useContext(FirebaseContext)
@@ -33,7 +33,7 @@ function App() {
         maxWidth: 1400,
         width: '100%'
       }}>
-        {loading ? <Loader />
+        {loading ? <CircularProgress sx={{m: 'auto'}} />
         :
           <BrowserRouter>
             <Navbar />

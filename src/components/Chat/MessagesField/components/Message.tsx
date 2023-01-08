@@ -46,7 +46,7 @@ const Message = (msg: IMsg) => {
         >
           <Typography variant='caption' component="h4">{msg.displayName}</Typography>
           {msg.text && <Typography>{msg.text}</Typography>}
-          {msg.audioData && <VoiceMessage {...msg.audioData} />}
+          {msg.audioData && <VoiceMessage audioData={msg.audioData} isLoading={msg.isLoading} />}
         </Box>
       </Grid>
     </Box>

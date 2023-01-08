@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../../../MainConf';
 import { UserChats, ChatCard } from './components';
-import { Loader } from '../../UI';
+import CircularProgress from '@mui/material/CircularProgress'
 
 const Sidebar = () => {
   const {auth, firestore} = useContext(FirebaseContext)
@@ -115,8 +115,11 @@ const Sidebar = () => {
       {/* Chats */}
       <Box sx={{overflowY: 'auto'}} position='absolute' top={64} bottom={0} left={15} right={0}>
         {/* if the user is serching for somebody and the data is still loading, shows loader */}
-        {loading ? <Box display='flex' alignItems='center'><Loader /></ Box> :
-          // if the user is found, show them
+        {loading ?
+          <Box display='flex' alignItems='center'>
+            <CircularProgress sx={{m: 'auto'}} />
+          </ Box>
+        : // if the user is found, show them
           foundUser ?
             <ChatCard
               photoURL={foundUser.photoURL}

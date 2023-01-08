@@ -7,7 +7,6 @@ import { useContext, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../../../MainConf';
 import { ChatContext } from '../../../reducer/ChatContext';
-import { audioData } from '../../../types/messageTypes';
 import { Record } from './components';
 
 export interface SendMessageProps {
@@ -24,60 +23,57 @@ const Footer = () => {
   const theme = useTheme()
 
   const SendMessage = async (audioData?: SendMessageProps) => {
+    isRecording && setIsRecording(false)
     if (chatContext?.state && user) { // it is always true here
-      const send = async (value: string) => {
-        // This function is separated because there is no better way to throw url here
-
-        // add message
-        await updateDoc(doc(firestore, 'chats', chatContext.state.chatId), {
-          messages: arrayUnion({
-            uid: user.uid,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            // if there is audioData, value is url, otherwise value is text
-            text: audioData ? null : value,
-            audioData: audioData ? {
-              audioUrl: value,
-              audioDuration: audioData.audioDuration
-            } : null,
-            createdAt: Timestamp.now()
-          })
-        })
-        
-        if (chatContext.state.user) { // it is always true here
-          // change users last message
-          await updateDoc(doc(firestore, 'userChats', chatContext.state.user.uid), {
-            [chatContext.state.chatId + '.lastMessage']: {
-              value: audioData ? null : value,
-              audioData: audioData ? {
-                audioDuration: audioData.audioDuration
-              } : null
-            },
-            [chatContext.state.chatId + '.date']: serverTimestamp()
-          })
-          await updateDoc(doc(firestore, 'userChats', user.uid), {
-            [chatContext.state.chatId + '.lastMessage']: {
-              value: audioData ? null : value,
-              audioData: audioData ? {
-                audioDuration: audioData.audioDuration
-              } : null
-            },
-            [chatContext.state.chatId + '.date']: serverTimestamp()
-          })
-        }
-      }
-          
+      let val;
       if (audioData) {
-        const audioRef = ref(storage, `voiceMessages/${chatContext.state.chatId}/${Timestamp.now().toString() + user.uid}`)
+        const audioRef = ref(storage, `voiceMessages/${chatContext.state.chatId}/${Timestamp.now().nanoseconds + user.uid}`)
         await uploadBytes(audioRef, audioData.audioBlob)
         await getDownloadURL(audioRef).then(url => {
-          send(url)
+          val = url
         })
       } else {
-        const val = value
+        val = value
         setValue('')
-        isRecording && setIsRecording(false)
-        send(val)
+      }
+      
+      // add message
+      chatContext.setLoadingMessage(null)
+      await updateDoc(doc(firestore, 'chats', chatContext.state.chatId), {
+        messages: arrayUnion({
+          uid: user.uid,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          // if there is audioData, val is url, otherwise val is text
+          text: audioData ? null : val,
+          audioData: audioData ? {
+            audioUrl: val,
+            audioDuration: audioData.audioDuration
+          } : null,
+          createdAt: Timestamp.now()
+        })
+      })
+      
+      if (chatContext.state.user) { // it is always true here
+        // change users last message
+        await updateDoc(doc(firestore, 'userChats', chatContext.state.user.uid), {
+          [chatContext.state.chatId + '.lastMessage']: {
+            value: audioData ? null : val,
+            audioData: audioData ? {
+              audioDuration: audioData.audioDuration
+            } : null
+          },
+          [chatContext.state.chatId + '.date']: serverTimestamp()
+        })
+        await updateDoc(doc(firestore, 'userChats', user.uid), {
+          [chatContext.state.chatId + '.lastMessage']: {
+            value: audioData ? null : val,
+            audioData: audioData ? {
+              audioDuration: audioData.audioDuration
+            } : null
+          },
+          [chatContext.state.chatId + '.date']: serverTimestamp()
+        })
       }
     }
   }
@@ -112,7 +108,11 @@ const Footer = () => {
             <SendIcon />
           </IconButton>
         : // otherwise shows the voice message button
-          <Record isRecording={isRecording} setIsRecording={setIsRecording} SendMessage={SendMessage} />
+          <Record
+            isRecording={isRecording}
+            setIsRecording={setIsRecording}
+            SendMessage={SendMessage}
+          />
         }
       </Box>
     </Grid>

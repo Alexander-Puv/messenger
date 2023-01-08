@@ -3,9 +3,11 @@ import SendIcon from '@mui/icons-material/Send';
 import StopIcon from '@mui/icons-material/Stop';
 import { Box, IconButton, Typography } from '@mui/material';
 import useTheme from '@mui/material/styles/useTheme';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { redColor } from '../../../../utils/colors';
 import { SendMessageProps } from '..';
+import { ChatContext } from '../../../../reducer/ChatContext';
+import { Timestamp } from 'firebase/firestore';
 
 interface RecordProps {
   isRecording: boolean,
@@ -15,6 +17,7 @@ interface RecordProps {
 
 const Record = ({isRecording, setIsRecording, SendMessage}: RecordProps) => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null)
+  const chatContext = useContext(ChatContext)
   const theme = useTheme()
 
   const StartRecording = async () => {
@@ -31,7 +34,6 @@ const Record = ({isRecording, setIsRecording, SendMessage}: RecordProps) => {
 
   const StopRecording = async (send?: true) => {
     if (mediaRecorder) { // it is always true here but TS doesn't understand it
-      setIsRecording(false)
       mediaRecorder.stop()
 
       if (send) {
@@ -53,7 +55,15 @@ const Record = ({isRecording, setIsRecording, SendMessage}: RecordProps) => {
                   const allSeconds = Math.floor(audio.duration)
                   const minutes = Math.floor(allSeconds / 60)
                   const seconds = allSeconds - minutes * 60
-                  SendMessage({audioBlob: audioBlob, audioDuration: `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`})
+
+                  chatContext?.setLoadingMessage({
+                    duration: `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`,
+                    createdAt: Timestamp.now()
+                  })
+                  SendMessage({
+                    audioBlob: audioBlob,
+                    audioDuration: `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+                  })
                 }
                 audio.currentTime = 0;
               }

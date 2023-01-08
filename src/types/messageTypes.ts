@@ -11,5 +11,6 @@ export interface IMsg {
   photoURL: string,
   text: string | null,
   audioData: audioData | null,
-  createdAt: Timestamp
+  createdAt: Timestamp,
+  isLoading?: boolean
 }

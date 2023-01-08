@@ -5,9 +5,11 @@ import { FirebaseContext } from '../../../MainConf';
 import { ChatContext } from '../../../reducer/ChatContext';
 import { IMsg } from '../../../types/messageTypes';
 import { Message } from './components';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 const MessagesField = () => {
-  const {firestore} = useContext(FirebaseContext)
+  const {auth, firestore} = useContext(FirebaseContext)
+  const [user] = useAuthState(auth)
   const chatContext = useContext(ChatContext)
   const [messages, setMessages] = useState<IMsg[] | []>([])
 
@@ -29,6 +31,20 @@ const MessagesField = () => {
         {messages.map((msg) =>
           <Message {...msg} key={msg.createdAt.nanoseconds} />
         )}
+        {chatContext?.loadingMessage && user &&
+          <Message
+            audioData={chatContext.loadingMessage.duration ? { // if no duration, then this is text message
+              audioDuration: chatContext.loadingMessage.duration,
+              audioUrl: ''
+            } : null}
+            text={chatContext.loadingMessage.text ?? null}
+            createdAt={chatContext.loadingMessage.createdAt}
+            displayName={user.displayName ?? ''}
+            photoURL={user.photoURL ?? ''}
+            uid={user.uid}
+            isLoading
+          />
+        }
       </Box>
     </Box>
   </>
