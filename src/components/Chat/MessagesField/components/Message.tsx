@@ -44,7 +44,18 @@ const Message = (msg: IMsg) => {
             borderTopLeftRadius: user?.uid === msg.uid ? 'auto' : 0,
           }}
         >
-          <Typography variant='caption' component="h4">{msg.displayName}</Typography>
+          <Box
+            display='flex'
+            flexDirection={user?.uid === msg.uid ? 'row-reverse' : 'row'}
+            width='100%'
+            gap='10px'
+            justifyContent='space-between'
+          >
+            <Typography variant='caption' component="h4">{msg.displayName}</Typography>
+            <Typography variant='caption' component="h4">
+              {msg.createdAt.toDate().getHours() + ':' + msg.createdAt.toDate().getMinutes()}
+            </Typography>
+          </Box>
           {msg.text && <Typography>{msg.text}</Typography>}
           {msg.audioData && <VoiceMessage audioData={msg.audioData} isLoading={msg.isLoading} />}
         </Box>

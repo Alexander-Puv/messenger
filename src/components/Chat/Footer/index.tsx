@@ -25,9 +25,11 @@ const Footer = () => {
   const SendMessage = async (audioData?: SendMessageProps) => {
     isRecording && setIsRecording(false)
     if (chatContext?.state && user) { // it is always true here
+      const createdAt = Timestamp.now()
+
       let val;
       if (audioData) {
-        const audioRef = ref(storage, `voiceMessages/${chatContext.state.chatId}/${Timestamp.now().nanoseconds + user.uid}`)
+        const audioRef = ref(storage, `voiceMessages/${chatContext.state.chatId}/${createdAt.nanoseconds + user.uid}`)
         await uploadBytes(audioRef, audioData.audioBlob)
         await getDownloadURL(audioRef).then(url => {
           val = url
@@ -50,7 +52,7 @@ const Footer = () => {
             audioUrl: val,
             audioDuration: audioData.audioDuration
           } : null,
-          createdAt: Timestamp.now()
+          createdAt
         })
       })
       
@@ -61,7 +63,8 @@ const Footer = () => {
             value: audioData ? null : val,
             audioData: audioData ? {
               audioDuration: audioData.audioDuration
-            } : null
+            } : null,
+            createdAt
           },
           [chatContext.state.chatId + '.date']: serverTimestamp()
         })
@@ -70,7 +73,8 @@ const Footer = () => {
             value: audioData ? null : val,
             audioData: audioData ? {
               audioDuration: audioData.audioDuration
-            } : null
+            } : null,
+            createdAt
           },
           [chatContext.state.chatId + '.date']: serverTimestamp()
         })
