@@ -63,8 +63,7 @@ const Footer = () => {
             value: audioData ? null : val,
             audioData: audioData ? {
               audioDuration: audioData.audioDuration
-            } : null,
-            createdAt
+            } : null
           },
           [chatContext.state.chatId + '.date']: serverTimestamp()
         })
@@ -73,8 +72,7 @@ const Footer = () => {
             value: audioData ? null : val,
             audioData: audioData ? {
               audioDuration: audioData.audioDuration
-            } : null,
-            createdAt
+            } : null
           },
           [chatContext.state.chatId + '.date']: serverTimestamp()
         })

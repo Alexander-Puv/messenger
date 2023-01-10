@@ -122,9 +122,9 @@ const Sidebar = () => {
         : // if the user is found, show them
           foundUser ?
             <ChatCard
-              photoURL={foundUser.photoURL}
-              displayName={foundUser.displayName}
-              content=''
+              // photoURL={foundUser.photoURL}
+              // displayName={foundUser.displayName}
+              lastMessage={null}
               onClick={handleSelect}
               anotherUser={foundUser}
             />

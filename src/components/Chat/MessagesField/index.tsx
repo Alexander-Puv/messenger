@@ -6,20 +6,13 @@ import { ChatContext } from '../../../reducer/ChatContext';
 import { IMsg } from '../../../types/messageTypes';
 import { ChatDate, ChatStart, Message } from './components';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { getMessageDate } from '../../../utils/getDate';
 
 const MessagesField = () => {
   const {auth, firestore} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const chatContext = useContext(ChatContext)
   const [messages, setMessages] = useState<IMsg[] | []>([])
-
-  const getMessageDate = (msg: IMsg) => {
-    const date = msg.createdAt.toDate()
-    const day = date.getDate() < 9 ? `0${date.getDate() + 1}` : date.getDate() + 1
-    const month = date.toLocaleString('default', { month: 'long' });
-    const year = date.getFullYear() !== new Date().getFullYear() ? ' ' + date.getFullYear() : ''
-    return `${day} ${month}${year}`
-  }
 
   useEffect(() => {
     if (chatContext?.state) {
@@ -41,12 +34,12 @@ const MessagesField = () => {
             {
               messages[index - 1] ? // if this is not the first message
                 // if this msg created date is not equal to last msg created date
-                getMessageDate(messages[index - 1]) !== getMessageDate(msg) &&
-                <ChatDate date={getMessageDate(msg)} />
+                getMessageDate(messages[index - 1].createdAt.toDate()) !== getMessageDate(msg.createdAt.toDate()) &&
+                <ChatDate date={getMessageDate(msg.createdAt.toDate())} />
               : // if this is the first message
                 <>
                 <ChatStart />
-                <ChatDate date={getMessageDate(msg)} />
+                <ChatDate date={getMessageDate(msg.createdAt.toDate())} />
                 </>
             } 
             <Message {...msg} />
