@@ -5,7 +5,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../MainConf';
 import { settings } from '../utils/navbarSettings';
 import { createContext } from 'react'
-import Popup, { PopupProps } from './UI/Popup';
+import Popup, { PopupProps } from './UI/Popup/Popup';
 import { Auth } from 'firebase/auth';
 import { Link } from 'react-router-dom';
 import { LOGIN_ROUTE, SIGNUP_ROUTE } from '../utils/consts';
@@ -83,7 +83,7 @@ export default function Navbar() {
         </Box>}
       </Toolbar>
     </AppBar>
-    {popup && <Popup text={popup.text} title={popup.title} btnText={popup.btnText} />}
+    {popup && <Popup content={popup.content} title={popup.title} btnText={popup.btnText} />}
     </NavbarContext.Provider>
   );
 }

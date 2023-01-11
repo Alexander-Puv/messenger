@@ -7,7 +7,7 @@ export const getMessageDate = (date: Date) => {
     return `${day < 10 ? `0${day}` : day}.${month}.${year}`
   }
   // otherwise returns 'day fullMonth'
-  const month = date.toLocaleString('default', { month: 'long' });
+  const month = date.toLocaleString('en-GB', { month: 'long' });
   return `${day} ${month}`
 }
 

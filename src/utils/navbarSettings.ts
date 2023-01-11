@@ -1,4 +1,6 @@
-import { PopupProps } from "../components/UI/Popup"
+import { PopupProps } from "../components/UI/Popup/Popup"
+import ProfileContent from "../components/UI/Popup/ProfileContent"
+import SettingsContent from "../components/UI/Popup/SettingsContent"
 
 interface PopupOnclickProps {
   setPopup: (props: null | PopupProps) => void
@@ -9,31 +11,40 @@ interface ISetting {
   onClick: (props: PopupOnclickProps) => void
 }
 
-const text = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium ratione iure reprehenderit at itaque aliquam fugiat labore maxime eligendi enim impedit veniam, neque repudiandae architecto! Obcaecati itaque quas architecto odit.'
+
+// important titles
+export const LOGOUT = 'Logout'
+export const SETTINGS = 'Settings'
+export const PROFILE = 'Profile'
+
+
+const content = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium ratione iure reprehenderit at itaque aliquam fugiat labore maxime eligendi enim impedit veniam, neque repudiandae architecto! Obcaecati itaque quas architecto odit.'
+
+
 
 export const settings: ISetting[] = [
   {
-    title: 'Profile',
+    title: PROFILE,
     onClick: ({setPopup}) => {
-      setPopup({title: 'Profile', text, btnText: 'OK'})
+      setPopup({title: PROFILE, content: SettingsContent(), btnText: 'OK'})
     }
   },
   {
-    title: 'Settings',
+    title: SETTINGS,
     onClick: ({setPopup}) => {
-      setPopup({title: 'Settings', text, btnText: 'OK'})
+      setPopup({title: SETTINGS, content: ProfileContent(), btnText: 'OK'})
     }
   },
   {
     title: 'FAQ',
     onClick: ({setPopup}) => {
-      setPopup({title: 'FAQ', text, btnText: 'OK'})
+      setPopup({title: 'FAQ', content, btnText: 'OK'})
     }
   },
   {
-    title: 'Logout',
+    title: LOGOUT,
     onClick: ({setPopup}) => {
-      setPopup({title: 'Logout', text, btnText: 'Cancel'})
+      setPopup({title: LOGOUT, content, btnText: 'Cancel'})
     }
   }
 ]

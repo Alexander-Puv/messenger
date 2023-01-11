@@ -1,4 +1,4 @@
-import Popup from './Popup'
+import Popup from './Popup/Popup'
 import Enter from './Enter'
 
 export {
