@@ -3,7 +3,7 @@ import ProfileContent from "../components/UI/Popup/ProfileContent"
 import SettingsContent from "../components/UI/Popup/SettingsContent"
 
 interface PopupOnclickProps {
-  setPopup: (props: null | PopupProps) => void
+  setPopup: (props: null | PopupProps) => void,
 }
 
 interface ISetting {
@@ -26,13 +26,13 @@ export const settings: ISetting[] = [
   {
     title: PROFILE,
     onClick: ({setPopup}) => {
-      setPopup({title: PROFILE, content: SettingsContent(), btnText: 'OK'})
+      setPopup({title: PROFILE, content: <ProfileContent />, btnText: 'OK'})
     }
   },
   {
     title: SETTINGS,
     onClick: ({setPopup}) => {
-      setPopup({title: SETTINGS, content: ProfileContent(), btnText: 'OK'})
+      setPopup({title: SETTINGS, content: <SettingsContent />, btnText: 'OK'})
     }
   },
   {

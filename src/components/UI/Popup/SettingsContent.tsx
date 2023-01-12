@@ -1,8 +1,15 @@
-import React from 'react'
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 
 const SettingsContent = () => {
   return (
-    <div>SettingsContent</div>
+    <List>
+      <ListItem>
+        <ListItemButton>
+          <ListItemIcon></ListItemIcon>
+          <ListItemText primary='Settings' />
+        </ListItemButton>
+      </ListItem>
+    </List>
   )
 }
 

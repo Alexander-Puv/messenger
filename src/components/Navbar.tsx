@@ -1,15 +1,14 @@
 import MenuIcon from '@mui/icons-material/Menu';
-import { AppBar, Avatar, Button, IconButton, Menu, MenuItem, Toolbar, Typography, Tooltip, Divider, Box } from '@mui/material';
-import { useContext, useState } from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { FirebaseContext } from '../MainConf';
-import { settings } from '../utils/navbarSettings';
-import { createContext } from 'react'
-import Popup, { PopupProps } from './UI/Popup/Popup';
+import { AppBar, Avatar, Box, Button, Divider, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import { Auth } from 'firebase/auth';
+import { createContext, useContext, useState } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { Link } from 'react-router-dom';
-import { LOGIN_ROUTE, SIGNUP_ROUTE } from '../utils/consts';
+import { FirebaseContext } from '../MainConf';
 import { redColor } from '../utils/colors';
+import { LOGIN_ROUTE, SIGNUP_ROUTE } from '../utils/consts';
+import { settings } from '../utils/navbarSettings';
+import Popup, { PopupProps } from './UI/Popup/Popup';
 
 interface NavbarContextProps {
   popup: PopupProps | null,
