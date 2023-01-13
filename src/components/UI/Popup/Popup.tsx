@@ -35,11 +35,6 @@ export default function Popup({title, content, btnText}: PopupProps) {
           {title}
         </Button>
 
-      case PROFILE:
-        return<Button onClick={handleClose} sx={{color: greenColor}}>
-          Apply {/* or somthing else */}
-        </Button>
-
       case SETTINGS:
         return<Button onClick={handleClose} sx={{color: greenColor}}>
           Apply {/* or somthing else */}

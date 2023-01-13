@@ -1,6 +1,6 @@
 import { PopupProps } from "../components/UI/Popup/Popup"
-import ProfileContent from "../components/UI/Popup/ProfileContent"
-import SettingsContent from "../components/UI/Popup/SettingsContent"
+import ProfileContent from "../components/UI/Popup/components/ProfileContent"
+import SettingsContent from "../components/UI/Popup/components/SettingsContent"
 
 interface PopupOnclickProps {
   setPopup: (props: null | PopupProps) => void,
