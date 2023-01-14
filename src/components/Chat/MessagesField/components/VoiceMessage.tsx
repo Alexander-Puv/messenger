@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { audioData } from '../../../../types/messageTypes';
 
 interface VoiceMessageProps {
@@ -15,9 +15,12 @@ interface VoiceMessageProps {
 
 const VoiceMessage = ({audioData, isLoading}: VoiceMessageProps) => {
   const [isListening, setIsListening] = useState(false)
+  const [isDataLoading, setIsDataLoading] = useState(true)
   const [sliderValue, setSliderValue] = useState(0)
-  const duration = Number(audioData.audioDuration.replace(':', '.'))
+  const duration = Number(audioData.audioDuration.replace(':', '.')) * 100
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  // console.log(duration * 100);
+  console.log(Number(sliderValue.toFixed()) * 100);
 
   const playAudio = () => {
     if (audioRef.current) {
@@ -45,17 +48,19 @@ const VoiceMessage = ({audioData, isLoading}: VoiceMessageProps) => {
         <CircularProgress sx={{width: '32px !important', height: '32px !important', p: 0.5}} />
       : // otherwise shows loaded message
         <>
-        <audio ref={audioRef} src={audioData.audioUrl} />
+        <audio
+          ref={audioRef} src={audioData.audioUrl}
+          onTimeUpdate={e => setSliderValue(e.target.currentTime * 100)}
+        />
         <Button onClick={!isListening ? playAudio : stopAudio} sx={{minWidth:'auto', p: 0.5}}>
           {!isListening ? <PlayArrowIcon /> : <PauseIcon />}
         </Button>
         </>
       }
-      <Slider 
-        value={sliderValue}
-        min={0}
-        max={duration * 100}
-        onChange={(_, value) => setSliderValue(value as number)}
+      <Slider
+        value={Number(sliderValue.toFixed()) * 100}
+        min={0} max={duration * 10000}
+        onChange={(_, value) => {setSliderValue((value as number) / 100); console.log(value);}}
         size='small'
         sx={{width: 200, m: '0 12px 0 18px'}}
       />
