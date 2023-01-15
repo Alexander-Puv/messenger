@@ -8,10 +8,11 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../../../MainConf';
 import { ChatContext } from '../../../reducer/ChatContext';
 import { Record } from './components';
+import { audioDuration } from '../../../types/messageTypes';
 
 export interface SendMessageProps {
   audioBlob: Blob,
-  audioDuration: string
+  audioDuration: audioDuration
 }
 
 const Footer = () => {
@@ -28,12 +29,17 @@ const Footer = () => {
       const createdAt = Timestamp.now()
 
       let val;
+      let audioDuration
       if (audioData) {
         const audioRef = ref(storage, `voiceMessages/${chatContext.state.chatId}/${createdAt.nanoseconds + user.uid}`)
         await uploadBytes(audioRef, audioData.audioBlob)
         await getDownloadURL(audioRef).then(url => {
           val = url
         })
+        audioDuration = {
+          string: audioData.audioDuration.string,
+          number: audioData.audioDuration.number
+        }
       } else {
         val = value
         setValue('')
@@ -50,7 +56,7 @@ const Footer = () => {
           text: audioData ? null : val,
           audioData: audioData ? {
             audioUrl: val,
-            audioDuration: audioData.audioDuration
+            audioDuration
           } : null,
           createdAt
         })
@@ -62,7 +68,7 @@ const Footer = () => {
           [chatContext.state.chatId + '.lastMessage']: {
             value: audioData ? null : val,
             audioData: audioData ? {
-              audioDuration: audioData.audioDuration
+              audioDuration
             } : null
           },
           [chatContext.state.chatId + '.date']: serverTimestamp()
@@ -71,7 +77,7 @@ const Footer = () => {
           [chatContext.state.chatId + '.lastMessage']: {
             value: audioData ? null : val,
             audioData: audioData ? {
-              audioDuration: audioData.audioDuration
+              audioDuration
             } : null
           },
           [chatContext.state.chatId + '.date']: serverTimestamp()

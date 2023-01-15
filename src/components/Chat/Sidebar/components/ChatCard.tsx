@@ -23,20 +23,6 @@ const ChatCard = (props: ChatCardProps) => {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
 
-  /* const getDate = (date: Date) => {
-    const day = date.getDate() + 1
-    const month = date.getMonth() + 1
-    const year = date.getFullYear()
-    
-    if (year !== new Date().getFullYear()) {
-      return `${day}.${month}.${year}`
-    }
-    if (month !== new Date().getMonth() + 1 || day !== new Date().getDate() + 1) {
-      return `${day} ${month}`
-    }
-    return ''
-  } */
-
   const handleSelect = (anotherUser: DocumentData) => {
     user && chatContext && chatContext.dispatch({
       type: ChatActionTypes.CHANGE_USER,
@@ -70,7 +56,7 @@ const ChatCard = (props: ChatCardProps) => {
               <Box display='flex' alignItems='flex-end'>
                 <KeyboardVoiceIcon fontSize='small' />
                 <Typography fontSize='inherit' lineHeight='1'>
-                  {props.lastMessage.audioData?.audioDuration}
+                  {props.lastMessage.audioData?.audioDuration.string}
                 </Typography>
               </Box> // otherwise audio
             : 'No comments' // if no messages - no comments

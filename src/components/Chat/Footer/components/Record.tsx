@@ -55,14 +55,18 @@ const Record = ({isRecording, setIsRecording, SendMessage}: RecordProps) => {
                   const allSeconds = Math.floor(audio.duration)
                   const minutes = Math.floor(allSeconds / 60)
                   const seconds = allSeconds - minutes * 60
+                  const duration = {
+                    string: `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`,
+                    number: audio.duration
+                  }
 
                   chatContext?.setLoadingMessage({
-                    duration: `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`,
+                    duration,
                     createdAt: Timestamp.now()
                   })
                   SendMessage({
                     audioBlob: audioBlob,
-                    audioDuration: `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+                    audioDuration: duration
                   })
                 }
                 audio.currentTime = 0;

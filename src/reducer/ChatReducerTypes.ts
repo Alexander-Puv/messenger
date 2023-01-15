@@ -1,5 +1,6 @@
 import React from 'react'
 import { DocumentData, Timestamp } from 'firebase/firestore'
+import { audioDuration } from '../types/messageTypes'
 
 export interface ChatContextProps {
   state: IChatState,
@@ -9,7 +10,7 @@ export interface ChatContextProps {
 }
 
 interface ILoadingMessage {
-  duration?: string,
+  duration?: audioDuration,
   text?: string,
   createdAt: Timestamp
 }

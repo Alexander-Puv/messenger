@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { audioData } from '../../../../types/messageTypes';
 
 interface VoiceMessageProps {
@@ -17,10 +17,7 @@ const VoiceMessage = ({audioData, isLoading}: VoiceMessageProps) => {
   const [isListening, setIsListening] = useState(false)
   const [isDataLoading, setIsDataLoading] = useState(true)
   const [sliderValue, setSliderValue] = useState(0)
-  const duration = Number(audioData.audioDuration.replace(':', '.')) * 100
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  // console.log(duration * 100);
-  console.log(Number(sliderValue.toFixed()) * 100);
 
   const playAudio = () => {
     if (audioRef.current) {
@@ -50,7 +47,7 @@ const VoiceMessage = ({audioData, isLoading}: VoiceMessageProps) => {
         <>
         <audio
           ref={audioRef} src={audioData.audioUrl}
-          onTimeUpdate={e => setSliderValue(e.target.currentTime * 100)}
+          onTimeUpdate={e => setSliderValue(e.target.currentTime)}
         />
         <Button onClick={!isListening ? playAudio : stopAudio} sx={{minWidth:'auto', p: 0.5}}>
           {!isListening ? <PlayArrowIcon /> : <PauseIcon />}
@@ -58,13 +55,13 @@ const VoiceMessage = ({audioData, isLoading}: VoiceMessageProps) => {
         </>
       }
       <Slider
-        value={Number(sliderValue.toFixed()) * 100}
-        min={0} max={duration * 10000}
+        value={sliderValue}
+        min={0} max={audioData.audioDuration.number}
         onChange={(_, value) => {setSliderValue((value as number) / 100); console.log(value);}}
         size='small'
         sx={{width: 200, m: '0 12px 0 18px'}}
       />
-      <Typography>{audioData.audioDuration}</Typography>
+      <Typography>{audioData.audioDuration.string}</Typography>
     </Box>
   )
 }

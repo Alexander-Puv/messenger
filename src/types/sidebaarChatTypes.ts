@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore"
+import { audioDuration } from "./messageTypes"
 
 export interface ISidebarChat {
   date: Timestamp,
@@ -14,7 +15,7 @@ export interface ILastMessage {
 }
 
 export interface ISidebarAudioData {
-  audioDuration: string
+  audioDuration: audioDuration
 }
 
 
