@@ -15,7 +15,6 @@ interface VoiceMessageProps {
 
 const VoiceMessage = ({audioData, isLoading}: VoiceMessageProps) => {
   const [isListening, setIsListening] = useState(false)
-  const [isDataLoading, setIsDataLoading] = useState(true)
   const [sliderValue, setSliderValue] = useState(0)
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -38,6 +37,13 @@ const VoiceMessage = ({audioData, isLoading}: VoiceMessageProps) => {
       audioRef.current.pause();
     }
   }
+
+  const changeTime = (val: number) => {
+    if (audioRef.current) {
+      setSliderValue(val / 100)
+      audioRef.current.currentTime = val / 100
+    }
+  }
   
   return (
     <Box display='flex' alignItems='center'>
@@ -55,9 +61,10 @@ const VoiceMessage = ({audioData, isLoading}: VoiceMessageProps) => {
         </>
       }
       <Slider
-        value={sliderValue}
-        min={0} max={audioData.audioDuration.number}
-        onChange={(_, value) => {setSliderValue((value as number) / 100); console.log(value);}}
+        // multiplications and divisions are used to make the slider smoother
+        value={sliderValue * 100}
+        min={0} max={audioData.audioDuration.number * 100}
+        onChange={(_, value) => changeTime(value as number)}
         size='small'
         sx={{width: 200, m: '0 12px 0 18px'}}
       />
