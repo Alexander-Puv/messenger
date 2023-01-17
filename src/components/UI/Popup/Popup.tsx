@@ -1,24 +1,34 @@
 import Button from '@mui/material/Button';
-import green from '@mui/material/colors/green';
-import Dialog from '@mui/material/Dialog';
+import Dialog, { DialogProps } from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useState, useContext } from 'react';
-import { NavbarContext } from '../../Navbar';
-import { LOGOUT, PROFILE, SETTINGS } from '../../../utils/navbarSettings';
+import { useContext, useEffect, useState } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { FirebaseContext } from '../../../MainConf';
 import { greenColor, redColor } from '../../../utils/colors';
+import { LOGOUT, SETTINGS } from '../../../utils/navbarSettings';
+import { NavbarContext } from '../../Navbar';
 
 export interface PopupProps {
   title: string,
   content: string | JSX.Element,
   btnText: string,
+  props?: DialogProps
 }
 
-export default function Popup({title, content, btnText}: PopupProps) {
-  const [open, setOpen] = useState(true);
+export default function Popup({title, content, btnText, props}: PopupProps) {
+  const {auth} = useContext(FirebaseContext)
+  const [user] = useAuthState(auth)
+  const [open, setOpen] = useState(props?.open ?? true);
   const context = useContext(NavbarContext)
+  if (!user) return <></>
+
+  useEffect(() => {
+    // this useEffect is changing Popup visibility if it is changing inside another function
+    props && setOpen(props.open)
+  }, [props?.open])
 
   const handleClose = () => {
     setOpen(false);
@@ -48,6 +58,7 @@ export default function Popup({title, content, btnText}: PopupProps) {
   return (
     <div>
       <Dialog
+        {...props}
         open={open}
         onClose={handleClose}
       >

@@ -1,6 +1,7 @@
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
-import { Avatar, IconButton, List, ListItem, TextField, Tooltip } from '@mui/material';
+import { Avatar, Box, IconButton, List, ListItem, TextField, Tooltip } from '@mui/material';
+import { FirebaseError } from 'firebase/app';
 import { PhoneAuthProvider, RecaptchaVerifier, updateEmail, updatePhoneNumber } from 'firebase/auth';
 import { useContext, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -10,34 +11,50 @@ import { FirebaseContext } from '../../../../MainConf';
 const ProfileContent = () => {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [email, setEmail] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
+  const [open, setOpen] = useState(false)
 
   if (!user) {
     return <p>Probably you broke up everything because I have no idea how you get here and there is no 'user' property</p>
   }
 
-  
-
   const changePhoto = () => {
   }
 
-  const applyPhoneNumber = async () => {
-    <Popup title='check' content={
-      <TextField id='WTF' value={verificationCode} onChange={e => setVerificationCode(e.target.value)} />
-    } btnText='YUP' />
-    // 'recaptcha-container' is the ID of an element in the DOM.
-    const applicationVerifier = new RecaptchaVerifier('WTF', {}, auth);
+
+
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [verificationId, setVerificationId] = useState('');
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const sendVerificationCode = async () => {
     const provider = new PhoneAuthProvider(auth);
-    const verificationId = await provider.verifyPhoneNumber(phoneNumber, applicationVerifier);
-    const phoneCredential = PhoneAuthProvider.credential(verificationId, verificationCode);
-    
-    await updatePhoneNumber(user, phoneCredential);
+    const applicationVerifier = new RecaptchaVerifier('recaptcha-container', {'size': 'normal'}, auth);
+    try {
+      const result = await provider.verifyPhoneNumber(phoneNumber, applicationVerifier);
+      setVerificationId(result);
+      setIsCodeSent(true);
+    } catch (error) {
+      error instanceof FirebaseError && setErrorMessage(error.message);
+    }
+  }
+
+  const verifyCode = async () => {
+    try {
+      const phoneCredential = PhoneAuthProvider.credential(verificationId, verificationCode);
+      await updatePhoneNumber(user, phoneCredential);
+    } catch (error) {
+      error instanceof FirebaseError && setErrorMessage(error.message);
+    }
   }
   const cancelPhoneNumber = () => {
     setPhoneNumber('')
   }
+
+
+
+  const [email, setEmail] = useState('')
 
   const applyEmail = async () => {
     await updateEmail(user, email)
@@ -61,7 +78,7 @@ const ProfileContent = () => {
         </Tooltip>
       </ListItem>
       {/* user phone number */}
-      <ListInputItem cancel={cancelPhoneNumber} apply={applyPhoneNumber} item={{
+      <ListInputItem cancel={cancelPhoneNumber} apply={isCodeSent ? verifyCode : sendVerificationCode} item={{
         title: user.phoneNumber ? 'Change phone number' : 'Add phone number',
         primary: user.phoneNumber ?? 'Add phone number',
         textField: <TextField
@@ -71,6 +88,11 @@ const ProfileContent = () => {
         />,
         icon: <PhoneIcon />
       }} />
+      <Popup title='check' props={{open}} content={
+        <></>
+      } btnText='YUP' />
+      <TextField value={verificationCode} onChange={e => setVerificationCode(e.target.value)} />
+      <Box id='recaptcha-container' sx={{display: 'flex', justifyContent: 'center'}}></Box>
       {/* user email */}
       <ListInputItem cancel={cancelEmail} apply={applyEmail} item={{
         title: 'Change email',
