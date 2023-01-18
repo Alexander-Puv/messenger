@@ -15,15 +15,19 @@ export interface PopupProps {
   title: string,
   content: string | JSX.Element,
   btnText: string,
+  btnOnClick?: () => void,
+  navbarPopup?: boolean,
   props?: DialogProps
 }
 
-export default function Popup({title, content, btnText, props}: PopupProps) {
+export default function Popup({title, content, btnText, btnOnClick, navbarPopup, props}: PopupProps) {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const [open, setOpen] = useState(props?.open ?? true);
   const context = useContext(NavbarContext)
-  if (!user) return <></>
+  if (!user) {
+    return <p>Probably you broke up everything because I have no idea how you get here and there is no 'user' property</p>
+  }
 
   useEffect(() => {
     // this useEffect is changing Popup visibility if it is changing inside another function
@@ -32,7 +36,7 @@ export default function Popup({title, content, btnText, props}: PopupProps) {
 
   const handleClose = () => {
     setOpen(false);
-    context?.setPopup(null)
+    navbarPopup && context?.setPopup(null)
   };
 
   const button = () => {
@@ -46,7 +50,7 @@ export default function Popup({title, content, btnText, props}: PopupProps) {
         </Button>
 
       case SETTINGS:
-        return<Button onClick={handleClose} sx={{color: greenColor}}>
+        return <Button onClick={handleClose} sx={{color: greenColor}}>
           Apply {/* or somthing else */}
         </Button>
     
