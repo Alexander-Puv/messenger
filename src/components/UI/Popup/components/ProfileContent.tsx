@@ -1,22 +1,37 @@
-import EmailIcon from '@mui/icons-material/Email';
-import PhoneIcon from '@mui/icons-material/Phone';
-import { Avatar, Box, IconButton, List, ListItem, TextField, Tooltip } from '@mui/material';
+import ContactMailIcon from '@mui/icons-material/ContactMail';
+import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
+import BadgeIcon from '@mui/icons-material/Badge';
+import { Alert, Avatar, Box, IconButton, List, ListItem, Snackbar, TextField, Tooltip } from '@mui/material';
 import { FirebaseError } from 'firebase/app';
-import { PhoneAuthProvider, RecaptchaVerifier, updateEmail, updatePhoneNumber } from 'firebase/auth';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { PhoneAuthProvider, RecaptchaVerifier, updateEmail, updatePhoneNumber, updateProfile } from 'firebase/auth';
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { ListInputItem, Popup } from '../../';
 import { FirebaseContext } from '../../../../MainConf';
+import { greenColor, redColor } from '../../../../utils/colors';
+import ProfilePhoto from './ProfilePhoto';
 
 const ProfileContent = () => {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
+  const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
   if (!user) return <></>
 
-  const changePhoto = () => {
-  }
+  const [username, setUsername] = useState('')
 
+  const applyUsername = () => {
+    updateProfile(user, {displayName: username}).
+      then(() => {
+        setSuccessMessage('Your username successfully changed')
+      }).catch((e) => {
+        e instanceof FirebaseError && setErrorMessage(e.message)
+      })
+  }
+  const cancelUsername = () => {
+    setUsername('')
+  }
 
 
   const [open, setOpen] = useState(false)
@@ -24,7 +39,6 @@ const ProfileContent = () => {
   const [verificationId, setVerificationId] = useState('')
   const [isCodeSent, setIsCodeSent] = useState(false)
   const [verificationCode, setVerificationCode] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
   const reRef = useRef(null)
 
   useEffect(() => {
@@ -40,18 +54,23 @@ const ProfileContent = () => {
       const result = await provider.verifyPhoneNumber(phoneNumber, applicationVerifier);
       setVerificationId(result);
       setIsCodeSent(true);
-    } catch (error) {
-      console.log(error);
-      error instanceof FirebaseError && setErrorMessage(error.message);
+    } catch (e) {
+      console.log(e);
+      e instanceof FirebaseError && setErrorMessage(e.message);
     }
   }
 
   const verifyCode = async () => {
     try {
       const phoneCredential = PhoneAuthProvider.credential(verificationId, verificationCode);
-      await updatePhoneNumber(user, phoneCredential);
-    } catch (error) {
-      error instanceof FirebaseError && setErrorMessage(error.message);
+      await updatePhoneNumber(user, phoneCredential).
+      then(() => {
+        setSuccessMessage('Your phone number successfully changed')
+      }).catch((e) => {
+        e instanceof FirebaseError && setErrorMessage(e.message)
+      })
+    } catch (e) {
+      e instanceof FirebaseError && setErrorMessage(e.message);
     }
   }
 
@@ -64,9 +83,13 @@ const ProfileContent = () => {
   const [email, setEmail] = useState('')
 
   const applyEmail = async () => {
-    await updateEmail(user, email)
+    await updateEmail(user, email).
+      then(() => {
+        setSuccessMessage('Your email successfully changed')
+      }).catch((e) => {
+        e instanceof FirebaseError && setErrorMessage(e.message)
+      })
   }
-
   const cancelEmail = () => {
     setEmail('')
   }
@@ -74,17 +97,17 @@ const ProfileContent = () => {
   return (
     <List sx={{minWidth: 400}}>
       {/* user photo */}
-      <ListItem>
-        <Tooltip title='Choose photo' sx={{m: 'auto'}}>
-          <IconButton onClick={changePhoto}>
-            <Avatar
-              src={user.photoURL ?? ''}
-              alt='Choose photo'
-              sx={{height: 100, width: 100}}
-            />
-          </IconButton>
-        </Tooltip>
-      </ListItem>
+      <ProfilePhoto />
+      {/* username */}
+      <ListInputItem cancel={cancelUsername} apply={applyUsername} item={{
+        title: 'Change username',
+        primary: user.displayName ?? '', // displayName could not be null
+        textField: <TextField
+        value={username}
+        onChange={e => setUsername(e.target.value)}
+        />,
+        icon: <BadgeIcon />
+      }} />
       {/* user phone number */}
       <ListInputItem cancel={cancelPhoneNumber} apply={() => setOpen(true)} item={{
         title: user.phoneNumber ? 'Change phone number' : 'Add phone number',
@@ -94,10 +117,10 @@ const ProfileContent = () => {
           onChange={e => setPhoneNumber(e.target.value)}
           type='tel'
         />,
-        icon: <PhoneIcon />
+        icon: <ContactPhoneIcon />
       }} />
       <Popup
-        title='check' props={{open}}
+        title='check' props={{open}} btnText='Nope'
         content={<>
           <TextField
             sx={{display: 'flex', width: '100%', mb: 1}}
@@ -105,7 +128,7 @@ const ProfileContent = () => {
           />
           <Box id='recaptcha-container' sx={{display: 'flex', justifyContent: 'center'}} ref={reRef}></Box>
         </>}
-        btnText='Nope' btnOnClick={verifyCode}
+        secondBtnProps={{sx: {color: greenColor}, children: 'Apply'}}
       />
       {/* user email */}
       <ListInputItem cancel={cancelEmail} apply={applyEmail} item={{
@@ -116,8 +139,21 @@ const ProfileContent = () => {
           onChange={e => setEmail(e.target.value)}
           type='email'
         />,
-        icon: <EmailIcon />
+        icon: <ContactMailIcon />
       }} />
+      {/* success or error */}
+      <Snackbar
+        open={successMessage || errorMessage ? true : false}
+        autoHideDuration={5000}
+        onClose={() => {setErrorMessage(''); setSuccessMessage('')}}
+      >
+        {successMessage ?
+          <Alert severity="success" sx={{backgroundColor: greenColor}}>{successMessage}</Alert>
+        : errorMessage ?
+          <Alert severity="error" sx={{backgroundColor: redColor}}>{errorMessage}</Alert>
+        : <Alert/>
+        }
+      </Snackbar>
     </List>
   )
 }

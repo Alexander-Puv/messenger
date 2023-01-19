@@ -1,10 +1,10 @@
-import Button from '@mui/material/Button';
+import Button, { ButtonProps } from '@mui/material/Button';
 import Dialog, { DialogProps } from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../../../MainConf';
 import { greenColor, redColor } from '../../../utils/colors';
@@ -15,16 +15,18 @@ export interface PopupProps {
   title: string,
   content: string | JSX.Element,
   btnText: string,
-  btnOnClick?: () => void,
+  secondBtnProps?: ButtonProps,
   navbarPopup?: boolean,
   props?: DialogProps
 }
 
-export default function Popup({title, content, btnText, btnOnClick, navbarPopup, props}: PopupProps) {
+export default function Popup({title, content, btnText, secondBtnProps, navbarPopup, props}: PopupProps) {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const [open, setOpen] = useState(props?.open ?? true);
   const context = useContext(NavbarContext)
+  const contentRef = useRef(null)
+  
   if (!user) {
     return <p>Probably you broke up everything because I have no idea how you get here and there is no 'user' property</p>
   }
@@ -39,24 +41,11 @@ export default function Popup({title, content, btnText, btnOnClick, navbarPopup,
     navbarPopup && context?.setPopup(null)
   };
 
-  const button = () => {
-    switch (title) {
-      case LOGOUT:
-        return <Button
-          onClick={async () => {await context?.auth.signOut(); handleClose()}}
-          sx={{color: redColor}}
-        >
-          {title}
-        </Button>
-
-      case SETTINGS:
-        return <Button onClick={handleClose} sx={{color: greenColor}}>
-          Apply {/* or somthing else */}
-        </Button>
-    
-      default:
-        return <></>;
-    } 
+  const onSecondBtnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (!secondBtnProps) return
+    if (title === LOGOUT) async () => await context?.auth.signOut()
+    secondBtnProps.onClick && secondBtnProps.onClick(e)
+    handleClose()
   }
 
   return (
@@ -69,7 +58,7 @@ export default function Popup({title, content, btnText, btnOnClick, navbarPopup,
         <DialogTitle>
           {title}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent ref={contentRef}>
           {typeof content === 'string' ?
             <DialogContentText>
               {content}
@@ -80,7 +69,12 @@ export default function Popup({title, content, btnText, btnOnClick, navbarPopup,
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} autoFocus>{btnText}</Button>
-          {button()}
+          {secondBtnProps &&
+            <Button
+              onClick={onSecondBtnClick}
+              {...secondBtnProps}
+            />
+          }
         </DialogActions>
       </Dialog>
     </div>

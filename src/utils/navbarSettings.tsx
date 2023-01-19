@@ -1,6 +1,7 @@
 import { PopupProps } from "../components/UI/Popup/Popup"
 import ProfileContent from "../components/UI/Popup/components/ProfileContent"
 import SettingsContent from "../components/UI/Popup/components/SettingsContent"
+import { greenColor, redColor } from "./colors"
 
 interface PopupOnclickProps {
   setPopup: (props: null | PopupProps) => void,
@@ -28,25 +29,34 @@ export const settings: ISetting[] = [
   {
     title: PROFILE,
     onClick: ({setPopup}) => {
-      setPopup({title: PROFILE, content: <ProfileContent />, btnText: 'OK', navbarPopup})
+      setPopup({title: PROFILE, content: <ProfileContent />, btnText: 'OK'})
     }
   },
   {
     title: SETTINGS,
     onClick: ({setPopup}) => {
-      setPopup({title: SETTINGS, content: <SettingsContent />, btnText: 'OK', navbarPopup})
+      setPopup({
+        title: SETTINGS, content: <SettingsContent />, btnText: 'OK',
+        secondBtnProps: {sx: {color: greenColor}, children: 'Apply'}
+      })
     }
   },
   {
     title: 'FAQ',
     onClick: ({setPopup}) => {
-      setPopup({title: 'FAQ', content, btnText: 'OK', navbarPopup})
+      setPopup({title: 'FAQ', content, btnText: 'OK'})
     }
   },
   {
     title: LOGOUT,
     onClick: ({setPopup}) => {
-      setPopup({title: LOGOUT, content, btnText: 'Cancel', navbarPopup})
+      setPopup({
+        title: LOGOUT, content, btnText: 'Cancel',
+        secondBtnProps: {
+          sx: {color: redColor},
+          children: LOGOUT
+        }
+      })
     }
   }
 ]

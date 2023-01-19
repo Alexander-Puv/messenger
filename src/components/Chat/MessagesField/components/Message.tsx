@@ -3,18 +3,18 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { blue, blueGrey } from '@mui/material/colors'
-import { useContext, useEffect, useRef } from 'react'
+import { useContext, useLayoutEffect, useRef } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
+import { VoiceMessage } from '.'
 import { FirebaseContext } from '../../../../MainConf'
 import { IMsg } from '../../../../types/messageTypes'
-import { VoiceMessage } from '.'
 
 const Message = (msg: IMsg) => {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const boxRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     boxRef.current?.scrollIntoView({behavior: 'auto'})
   }, [msg])
 
