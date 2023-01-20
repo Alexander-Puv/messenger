@@ -1,15 +1,26 @@
+import { Alert, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar } from '@mui/material';
 import Button, { ButtonProps } from '@mui/material/Button';
 import Dialog, { DialogProps } from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import { useContext, useEffect, useState, useRef, useLayoutEffect } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../../../MainConf';
 import { greenColor, redColor } from '../../../utils/colors';
-import { LOGOUT, SETTINGS } from '../../../utils/navbarSettings';
+import { LOGOUT } from '../../../utils/navbarSettings';
 import { NavbarContext } from '../../Navbar';
+
+interface PopupContextProps {
+  successMessage: string,
+  setSuccessMessage: (prop: string) => void,
+  errorMessage: string,
+  setErrorMessage: (prop: string) => void
+}
+
+export const PopupContext = createContext<PopupContextProps>({
+  successMessage: '',
+  setSuccessMessage: () => {},
+  errorMessage: '',
+  setErrorMessage: () => {}
+})
 
 export interface PopupProps {
   title: string,
@@ -23,7 +34,9 @@ export interface PopupProps {
 export default function Popup({title, content, btnText, secondBtnProps, navbarPopup, props}: PopupProps) {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
-  const [open, setOpen] = useState(props?.open ?? true);
+  const [open, setOpen] = useState(props?.open ?? true)
+  const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
   const context = useContext(NavbarContext)
   const contentRef = useRef(null)
   
@@ -49,7 +62,12 @@ export default function Popup({title, content, btnText, secondBtnProps, navbarPo
   }
 
   return (
+    <PopupContext.Provider value={{
+      successMessage, setSuccessMessage,
+      errorMessage, setErrorMessage
+    }}>
     <div>
+      {/* popup */}
       <Dialog
         {...props}
         open={open}
@@ -77,6 +95,20 @@ export default function Popup({title, content, btnText, secondBtnProps, navbarPo
           }
         </DialogActions>
       </Dialog>
+      {/* success or error */}
+      <Snackbar
+        open={successMessage || errorMessage ? true : false}
+        autoHideDuration={5000}
+        onClose={() => {setErrorMessage(''); setSuccessMessage('')}}
+      >
+        {successMessage ?
+          <Alert severity="success" sx={{backgroundColor: greenColor}}>{successMessage}</Alert>
+        : errorMessage ?
+          <Alert severity="error" sx={{backgroundColor: redColor}}>{errorMessage}</Alert>
+        : <Alert/>
+        }
+      </Snackbar>
     </div>
+    </PopupContext.Provider>
   );
 }

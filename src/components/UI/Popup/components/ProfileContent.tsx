@@ -10,12 +10,12 @@ import { ListInputItem, Popup } from '../../';
 import { FirebaseContext } from '../../../../MainConf';
 import { greenColor, redColor } from '../../../../utils/colors';
 import ProfilePhoto from './ProfilePhoto';
+import { PopupContext } from '../Popup';
 
 const ProfileContent = () => {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
-  const [successMessage, setSuccessMessage] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const {setErrorMessage, setSuccessMessage} = useContext(PopupContext)
 
   if (!user) return <></>
 
@@ -141,19 +141,6 @@ const ProfileContent = () => {
         />,
         icon: <ContactMailIcon />
       }} />
-      {/* success or error */}
-      <Snackbar
-        open={successMessage || errorMessage ? true : false}
-        autoHideDuration={5000}
-        onClose={() => {setErrorMessage(''); setSuccessMessage('')}}
-      >
-        {successMessage ?
-          <Alert severity="success" sx={{backgroundColor: greenColor}}>{successMessage}</Alert>
-        : errorMessage ?
-          <Alert severity="error" sx={{backgroundColor: redColor}}>{errorMessage}</Alert>
-        : <Alert/>
-        }
-      </Snackbar>
     </List>
   )
 }

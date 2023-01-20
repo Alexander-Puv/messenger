@@ -1,47 +1,59 @@
-import { Avatar, IconButton, ListItem, Tooltip } from '@mui/material'
+import { Avatar, CircularProgress, IconButton, ListItem, Tooltip } from '@mui/material'
 import React, { useContext, useState, useRef, useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { FirebaseContext } from '../../../../MainConf'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
-import Popup from '../Popup'
+import Popup, { PopupContext } from '../Popup'
+import { greenColor } from '../../../../utils/colors'
+import { updateProfile } from 'firebase/auth'
+import { FirebaseError } from 'firebase/app'
+import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore'
 
 const ProfilePhoto = () => {
-  const {auth, storage} = useContext(FirebaseContext)
+  const {auth, storage, firestore} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const [photo, setPhoto] = useState<File | null>(null);
-  const [URL, setURL] = useState('');
-  const [popup, setPopup] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null);
+  const {setErrorMessage, setSuccessMessage} = useContext(PopupContext)
 
   if (!user) return <></>
 
-  useEffect(() => {
-    const uploadPhoto = async (file: File) => {
-      const audioRef = ref(storage, `userPhoto/${user.uid}`)
-      // this url is to
-      await uploadBytes(audioRef, file)
-      await getDownloadURL(audioRef).then(url => {
-        setURL(url)
-      })
-    }
-    
-    photo && uploadPhoto(photo)
-  }, [photo])
-
-  const changePhoto = () => {
-    /* updateProfile(user, {photoURL: }).
-      then(() => {
-        setSuccessMessage('Your username successfully changed')
-      }).catch((e) => {
-        e instanceof FirebaseError && setErrorMessage(e.message)
-      }) */
+  const uploadPhoto = async () => {
+    if (!photo) return
+    setIsLoading(true)
+    const file = photo
+    setPhoto(null)
+    const audioRef = ref(storage, `userPhoto/${user.uid}`)
+    await uploadBytes(audioRef, file)
+    await getDownloadURL(audioRef).then(url => {
+      changePhoto(url)
+    })
   }
 
-  const onDrop = (e: React.DragEvent<HTMLLIElement>) => {
-    e.preventDefault();
-    const droppedFiles = e.dataTransfer.files;
-    console.log(droppedFiles);
-    setPhoto(droppedFiles[0]);
+  const changePhoto = async (url: string) => {
+    try {
+      const q = query(collection(firestore, 'users'), where('uid', '==', user.uid))
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach(async (d) => {
+        await updateDoc(doc(firestore, 'users', d.data().uid), {
+          photoURL: url
+        })
+      });
+
+      await updateProfile(user, {photoURL: url})
+      setSuccessMessage('Your username successfully changed')
+    } catch (e) {
+      e instanceof FirebaseError && setErrorMessage(e.message)
+    }
+    setIsLoading(false)
+  }
+
+  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    const droppedFiles = e.dataTransfer.files
+    console.log(droppedFiles)
+    setPhoto(droppedFiles[0])
   }
 
   const onClick = () => {
@@ -50,7 +62,6 @@ const ProfilePhoto = () => {
 
   return (
     <ListItem
-      onDragOver={e => e.preventDefault()} onDrop={onDrop}
       sx={{transition: '.3s ease'}}
     >
       <input
@@ -60,20 +71,32 @@ const ProfilePhoto = () => {
         ref={inputRef}
         style={{ display: 'none' }}
       />
-      <Tooltip title='Choose photo' sx={{m: 'auto'}} onClick={onClick}>
-        <IconButton>
-          <Avatar
-            src={user.photoURL ?? ''}
-            alt='Choose photo'
-            sx={{height: 100, width: 100}}
-          />
-        </IconButton>
-      </Tooltip>
-      {popup && <Popup
+      {isLoading ?
+        <CircularProgress sx={{m: 'auto'}} />
+      :
+        <Tooltip
+          onDragOver={e => e.preventDefault()}
+          onDrop={onDrop} onClick={onClick}
+          title='Choose photo' sx={{m: 'auto'}}
+        >
+          <IconButton>
+            <Avatar
+              src={user.photoURL ?? ''}
+              alt='Choose photo'
+              sx={{height: 100, width: 100}}
+            />
+          </IconButton>
+        </Tooltip>
+      }
+      {photo && <Popup
         title='Are you sure?'
         content="I had a thought maybe you don't want to change photo, huh?"
         btnText="No, not really"
-        
+        secondBtnProps={{
+          sx: {color: greenColor},
+          children: 'Change',
+          onClick: uploadPhoto
+        }}
       />}
     </ListItem>
   )
