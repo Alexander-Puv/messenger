@@ -36,7 +36,7 @@ const ProfilePhoto = () => {
       const q = query(collection(firestore, 'users'), where('uid', '==', user.uid))
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach(async (d) => {
-        await updateDoc(doc(firestore, 'users', d.data().uid), {
+        await updateDoc(doc(firestore, 'users', d.id), {
           photoURL: url
         })
       });
