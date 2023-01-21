@@ -1,13 +1,14 @@
 import { Avatar, CircularProgress, IconButton, ListItem, Tooltip } from '@mui/material'
-import React, { useContext, useState, useRef, useEffect } from 'react'
+import { FirebaseError } from 'firebase/app'
+import { updateProfile } from 'firebase/auth'
+import { doc, updateDoc } from 'firebase/firestore'
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { FirebaseContext } from '../../../../MainConf'
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
-import Popup, { PopupContext } from '../Popup'
+import { useFirebaseDoc } from '../../../../hooks/useFirebaseDoc'
 import { greenColor } from '../../../../utils/colors'
-import { updateProfile } from 'firebase/auth'
-import { FirebaseError } from 'firebase/app'
-import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore'
+import Popup, { PopupContext } from '../Popup'
 
 const ProfilePhoto = () => {
   const {auth, storage, firestore} = useContext(FirebaseContext)
@@ -16,8 +17,13 @@ const ProfilePhoto = () => {
   const [isLoading, setIsLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null);
   const {setErrorMessage, setSuccessMessage} = useContext(PopupContext)
+  const [getDoc, _, error] = useFirebaseDoc()
 
   if (!user) return <></>
+
+  useEffect(() => {
+    error && setErrorMessage(error)
+  }, [error])
 
   const uploadPhoto = async () => {
     if (!photo) return
@@ -33,13 +39,11 @@ const ProfilePhoto = () => {
 
   const changePhoto = async (url: string) => {
     try {
-      const q = query(collection(firestore, 'users'), where('uid', '==', user.uid))
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach(async (d) => {
+      getDoc && getDoc('users', 'uid', user.uid, async (d) => {
         await updateDoc(doc(firestore, 'users', d.id), {
           photoURL: url
         })
-      });
+      })
 
       await updateProfile(user, {photoURL: url})
       setSuccessMessage('Your username successfully changed')
