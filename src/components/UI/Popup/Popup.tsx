@@ -43,6 +43,7 @@ export default function Popup({title, content, btnText, secondBtnProps, navbarPo
   if (!user) {
     return <p>Probably you broke up everything because I have no idea how you get here and there is no 'user' property</p>
   }
+  
 
   useEffect(() => {
     // this useEffect is changing Popup visibility if it is changing inside another function
@@ -54,10 +55,9 @@ export default function Popup({title, content, btnText, secondBtnProps, navbarPo
     navbarPopup && context?.setPopup(null)
   };
 
-  const onSecondBtnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    if (!secondBtnProps) return
-    if (title === LOGOUT) async () => await context?.auth.signOut()
-    secondBtnProps.onClick && secondBtnProps.onClick(e)
+  const onSecondBtnClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (title === LOGOUT) await context?.auth.signOut()
+    secondBtnProps?.onClick && secondBtnProps.onClick(e)
     handleClose()
   }
 
