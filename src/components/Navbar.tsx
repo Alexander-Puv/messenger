@@ -82,13 +82,7 @@ export default function Navbar() {
         </Box>}
       </Toolbar>
     </AppBar>
-    {popup && <Popup
-      content={popup.content}
-      title={popup.title}
-      btnText={popup.btnText}
-      navbarPopup
-      secondBtnProps={popup.secondBtnProps}
-    />}
+    {popup && <Popup {...popup} navbarPopup />}
     </NavbarContext.Provider>
   );
 }

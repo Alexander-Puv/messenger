@@ -1,5 +1,5 @@
 import { PopupProps } from "../components/UI/Popup/Popup"
-import ProfileContent from "../components/UI/Popup/components/ProfileContent"
+import ProfileContent from "../components/UI/Popup/components/Profile"
 import SettingsContent from "../components/UI/Popup/components/SettingsContent"
 import { greenColor, redColor } from "./colors"
 

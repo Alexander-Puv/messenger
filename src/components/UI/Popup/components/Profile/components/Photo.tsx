@@ -5,12 +5,12 @@ import { doc, updateDoc } from 'firebase/firestore'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { FirebaseContext } from '../../../../MainConf'
-import { useFirebaseDoc } from '../../../../hooks/useFirebaseDoc'
-import { greenColor } from '../../../../utils/colors'
-import Popup, { PopupContext } from '../Popup'
+import { FirebaseContext } from '../../../../../../MainConf'
+import { useFirebaseDoc } from '../../../../../../hooks/useFirebaseDoc'
+import { greenColor } from '../../../../../../utils/colors'
+import Popup, { PopupContext } from '../../../Popup'
 
-const ProfilePhoto = () => {
+const Photo = () => {
   const {auth, storage, firestore} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const [photo, setPhoto] = useState<File | null>(null);
@@ -106,4 +106,4 @@ const ProfilePhoto = () => {
   )
 }
 
-export default ProfilePhoto
+export default Photo
