@@ -9,7 +9,7 @@ import { ListInputItem } from '../../..';
 import { FirebaseContext } from '../../../../../MainConf';
 import { useFirebaseDoc } from '../../../../../hooks/useFirebaseDoc';
 import { PopupContext } from '../../Popup';
-import { EmailNPassword, Phone, Photo } from './components';
+import { EmailNPassword, Photo } from './components';
 
 const ProfileContent = () => {
   const {auth, firestore} = useContext(FirebaseContext)
@@ -54,8 +54,6 @@ const ProfileContent = () => {
         />,
         icon: <BadgeIcon />
       }} />
-      {/* user phone number */}
-      <Phone />
       {/* user email and password */}
       <EmailNPassword />
     </List>
