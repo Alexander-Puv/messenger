@@ -53,7 +53,7 @@ const VoiceMessage = ({audioData, isLoading}: VoiceMessageProps) => {
         <>
         <audio
           ref={audioRef} src={audioData.audioUrl}
-          onTimeUpdate={e => setSliderValue(e.target.currentTime)}
+          onTimeUpdate={e => setSliderValue(e.currentTarget.currentTime)}
         />
         <Button onClick={!isListening ? playAudio : stopAudio} sx={{minWidth:'auto', p: 0.5}}>
           {!isListening ? <PlayArrowIcon /> : <PauseIcon />}
