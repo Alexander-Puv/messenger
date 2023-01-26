@@ -5,17 +5,21 @@ import { FirebaseContext } from '../../../../MainConf'
 import { ChatContext } from '../../../../reducer/ChatContext'
 import { ChatCard } from './'
 import { ISidebarChat } from '../../../../types/sidebaarChatTypes'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
 
 const UserChats = () => {
   const {auth, firestore} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const [chats, setChats] = useState<DocumentData | null | undefined>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const chatContext = useContext(ChatContext)
 
   useEffect(() => {
     if (user) {
       const unsub = onSnapshot(doc(firestore, "userChats", user.uid), (doc) => {
         setChats(doc.data())
+        setIsLoading(false)
       });
 
       return () => {
@@ -25,7 +29,11 @@ const UserChats = () => {
   }, [user?.uid])
 
   return <>
-    {chats && Object.entries(chats).sort((a, b) => b[1].date - a[1].date).map((chat: [string, ISidebarChat]) => 
+    {isLoading ?
+      <Box display='flex' alignItems='center'>
+        <CircularProgress sx={{m: 'auto'}} />
+      </Box>
+    : chats && Object.entries(chats).sort((a, b) => b[1].date - a[1].date).map((chat: [string, ISidebarChat]) => 
       <ChatCard
         // displayName={chat[1].userInfo.displayName}
         // photoURL={chat[1].userInfo.photoURL ?? ''}

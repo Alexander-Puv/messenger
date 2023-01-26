@@ -3,6 +3,7 @@ import Navbar from './Navbar'
 import Footer from './Chat/Footer'
 import MessagesField from './Chat/MessagesField'
 import Sidebar from './Chat/Sidebar'
+import MainPart from './Chat/MainPart'
 
 export {
   AppRouter,
@@ -10,4 +11,5 @@ export {
   Footer,
   MessagesField,
   Sidebar,
+  MainPart
 }

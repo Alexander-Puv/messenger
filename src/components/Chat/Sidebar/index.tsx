@@ -12,7 +12,7 @@ const Sidebar = () => {
   const [user] = useAuthState(auth)
   const [username, setUsername] = useState('')
   const [foundUser, setFoundUser] = useState<null | DocumentData>(null)
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<false | string>(false)
 
   useEffect(() => {
@@ -29,7 +29,7 @@ const Sidebar = () => {
     // if search input is empty don't do anything
     if (!username) return
 
-    setLoading(true)
+    setIsLoading(true)
 
     const q = query(collection(firestore, 'users'), where('displayName', '==', username))
 
@@ -45,7 +45,7 @@ const Sidebar = () => {
       setError('Somthing went wrong')
     }
 
-    setLoading(false)
+    setIsLoading(false)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -114,11 +114,11 @@ const Sidebar = () => {
       </Paper>
       {/* Chats */}
       <Box sx={{overflowY: 'auto'}} position='absolute' top={64} bottom={0} left={15} right={0}>
-        {/* if the user is serching for somebody and the data is still loading, shows loader */}
-        {loading ?
+        {/* if the user is serching for somebody and the data is still isLoading, shows loader */}
+        {isLoading ?
           <Box display='flex' alignItems='center'>
             <CircularProgress sx={{m: 'auto'}} />
-          </ Box>
+          </Box>
         : // if the user is found, show them
           foundUser ?
             <ChatCard

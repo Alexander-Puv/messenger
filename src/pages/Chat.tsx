@@ -1,5 +1,5 @@
 import Grid from '@mui/material/Grid';
-import { Footer, MessagesField, Sidebar } from '../components';
+import { Sidebar, MainPart } from '../components';
 import { ChatContextProvider } from '../reducer/ChatContext';
 
 const Chat = () => {
@@ -8,10 +8,7 @@ const Chat = () => {
     <ChatContextProvider>
     <Grid container flex={1}>
       <Sidebar />
-      <Grid container flex={1} position='relative'>
-        <MessagesField />
-        <Footer />
-      </Grid>
+      <MainPart />
     </Grid>
     </ChatContextProvider>
   )
