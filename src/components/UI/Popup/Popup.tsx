@@ -60,6 +60,25 @@ export default function Popup({title, content, btnText, secondBtnProps, navbarPo
     secondBtnProps?.onClick && secondBtnProps.onClick(e)
     handleClose()
   }
+  
+  // a surprise
+  const [popup, setPopup] = useState<PopupProps | null>(null)
+
+  useEffect(() => {
+    if (title === LOGOUT) {
+      const timer = setTimeout(() => {
+        setPopup({
+          btnText: 'WOOOOOW!!!',
+          content: "This is a surprise for your efforts and for your aspiration to do some useless shi... Congrats!!! You didn't just leave your computer turned on on this popup, did you?",
+          title: 'Surprise!!!'
+        })
+      }, 90000000); // 25 hours, I hope
+
+      return () => {
+        clearTimeout(timer)
+      }
+    }
+  }, [])
 
   return (
     <PopupContext.Provider value={{
@@ -108,6 +127,7 @@ export default function Popup({title, content, btnText, secondBtnProps, navbarPo
         : <Alert/>
         }
       </Snackbar>
+      {popup && <Popup {...popup} />}
     </div>
     </PopupContext.Provider>
   );

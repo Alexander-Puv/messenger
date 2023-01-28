@@ -19,10 +19,11 @@ export const SETTINGS = 'Settings'
 export const PROFILE = 'Profile'
 
 
-const content = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium ratione iure reprehenderit at itaque aliquam fugiat labore maxime eligendi enim impedit veniam, neque repudiandae architecto! Obcaecati itaque quas architecto odit.'
+const FAQContent = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium ratione iure reprehenderit at itaque aliquam fugiat labore maxime eligendi enim impedit veniam, neque repudiandae architecto! Obcaecati itaque quas architecto odit.'
+const logoutContent = "No! Don't leave me! I can offer you somthing... Yes, yes... Just don't click anywhere and you will unlock it in 25 hours!"
 
-
-const navbarPopup = true
+// too rude
+// "Wanna logout? And what are you gonna do without it? You're gonna go out and breathe fresh air? Don't spread nonsense! Order some pizza, close the windows, turn off the lights and look at the monitor"
 
 
 export const settings: ISetting[] = [
@@ -44,14 +45,14 @@ export const settings: ISetting[] = [
   {
     title: 'FAQ',
     onClick: ({setPopup}) => {
-      setPopup({title: 'FAQ', content, btnText: 'OK'})
+      setPopup({title: 'FAQ', content: FAQContent, btnText: 'OK'})
     }
   },
   {
     title: LOGOUT,
     onClick: ({setPopup}) => {
       setPopup({
-        title: LOGOUT, content, btnText: 'Cancel',
+        title: LOGOUT, content: logoutContent, btnText: 'Cancel',
         secondBtnProps: {
           sx: {color: redColor},
           children: LOGOUT
