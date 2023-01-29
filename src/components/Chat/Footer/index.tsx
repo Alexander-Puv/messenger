@@ -7,8 +7,8 @@ import { useContext, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../../../MainConf';
 import { ChatContext } from '../../../reducer/ChatContext';
-import { Record } from './components';
 import { audioDuration } from '../../../types/messageTypes';
+import { Attach, Record } from './components';
 
 export interface SendMessageProps {
   audioBlob: Blob,
@@ -22,6 +22,11 @@ const Footer = () => {
   const [isRecording, setIsRecording] = useState(false)
   const chatContext = useContext(ChatContext)
   const theme = useTheme()
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const attachFile = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setAnchorEl(e.currentTarget)
+  }
 
   const SendMessage = async (audioData?: SendMessageProps) => {
     isRecording && setIsRecording(false)
@@ -95,8 +100,9 @@ const Footer = () => {
         background: theme.palette.background.default,
         backgroundImage: 'linear-gradient(rgba(255 255 255 / 0.02), rgba(255 255 255 / 0.02))'
       }}
-      p={1}
+      p={1} gap={1}
     >
+      <Attach />
       <TextField
         variant='outlined'
         sx={{flex: 1}}

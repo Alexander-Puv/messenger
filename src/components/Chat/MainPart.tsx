@@ -33,7 +33,7 @@ const MainPart = () => {
       <Box display='flex' flexGrow={1}>
         <Paper sx={{display: 'flex', maxWidth: 650, height: 200, p: 2, m: 'auto'}}>
           <Typography sx={{m: 'auto'}} textAlign='center'>
-            Choose a chat in the Sidebar 👈 and start a conversation <br />
+            Choose a chat in the Sidebar and start a conversation 👈 <br />
             No chats? Find somebody at the top of the Sidebar 👆 <br />
             No friends in this messenger? Find somebody in another one and bring them here 🤫 <br />
             Nobody to bring? Take the initiative: go out and meet new people 👉

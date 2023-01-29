@@ -1,5 +1,7 @@
 import Record from './Record'
+import Attach from './Attach'
 
 export {
-  Record
+  Record,
+  Attach
 }
