@@ -22,11 +22,6 @@ const Footer = () => {
   const [isRecording, setIsRecording] = useState(false)
   const chatContext = useContext(ChatContext)
   const theme = useTheme()
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const attachFile = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setAnchorEl(e.currentTarget)
-  }
 
   const SendMessage = async (audioData?: SendMessageProps) => {
     isRecording && setIsRecording(false)

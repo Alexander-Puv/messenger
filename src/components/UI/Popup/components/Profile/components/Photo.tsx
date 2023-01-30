@@ -56,7 +56,6 @@ const Photo = () => {
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     const droppedFiles = e.dataTransfer.files
-    console.log(droppedFiles)
     setPhoto(droppedFiles[0])
   }
 

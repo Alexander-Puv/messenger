@@ -31,7 +31,7 @@ const MainPart = () => {
       </Grid>
     :
       <Box display='flex' flexGrow={1}>
-        <Paper sx={{display: 'flex', maxWidth: 650, height: 200, p: 2, m: 'auto'}}>
+        <Paper sx={{display: 'flex', maxWidth: 650, minHeight: 200, p: 2, m: 'auto'}}>
           <Typography sx={{m: 'auto'}} textAlign='center'>
             Choose a chat in the Sidebar and start a conversation 👈 <br />
             No chats? Find somebody at the top of the Sidebar 👆 <br />
