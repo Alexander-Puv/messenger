@@ -9,6 +9,7 @@ import { FirebaseContext } from '../../../MainConf';
 import { ChatContext } from '../../../reducer/ChatContext';
 import { audioDuration } from '../../../types/messageTypes';
 import { Attach, Record } from './components';
+import { MessageInput } from '../../UI';
 
 export interface SendMessageProps {
   audioBlob: Blob,
@@ -98,19 +99,7 @@ const Footer = () => {
       p={1} gap={1}
     >
       <Attach />
-      <TextField
-        variant='outlined'
-        sx={{flex: 1}}
-        size='small'
-        maxRows={10}
-        multiline
-        value={value}
-        onChange={e => setValue(e.target.value)}
-        onKeyDown={e => {if (e.code === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          SendMessage();
-        }}}
-      />
+      <MessageInput {...{value, setValue, SendMessage}} />
       <Box display='flex' alignItems='flex-end'>
         {value ? // if the user wrote somthing, shows send button
           <IconButton onClick={() => SendMessage()} sx={{color: theme.palette.primary.main}}>

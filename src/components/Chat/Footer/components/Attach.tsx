@@ -15,32 +15,19 @@ const Attach = () => {
   const theme = useTheme()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const attachFile = async (image: File) => {
-    if (!chatContext || !user) return // always false
-    const createdAt = Timestamp.now()
-    const imageRef = ref(storage, `imageMessages/${chatContext.state.chatId}/${createdAt.nanoseconds + user.uid}`)
-    await uploadBytes(imageRef, image).then(() => {
-
-    })
-  };
-
-  const onDrop = (e: React.DragEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    const droppedFiles = e.dataTransfer.files
-    attachFile(droppedFiles[0])
-  }
+  
 
   return (
     <div>
       <input
-        onChange={e => e.target.files && attachFile(e.target.files[0])}
+        onChange={e => e.target.files && chatContext?.setImages(e.target.files)}
         type='file' ref={inputRef}
-        accept=''
+        accept='.jpg, .webp, .jpeg, .png'
+        multiple
         style={{display: 'none'}}
       />
       <IconButton
         onClick={() => inputRef.current?.click()}
-        onDrop={onDrop}
         sx={{color: theme.palette.text.secondary}}
       >
         <ImageIcon />

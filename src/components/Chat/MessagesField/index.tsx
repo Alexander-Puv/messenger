@@ -16,6 +16,7 @@ const MessagesField = ({messages}: {messages: IMsg[]}) => {
   return <>
     <Box sx={{overflowY: 'auto'}} width='100%' position='absolute' top={0} bottom='56px'>
       <Box height='100%' display='flex' flexDirection='column'>
+        <ChatStart />
         {messages.map((msg, index) =>
           <React.Fragment key={msg.createdAt.nanoseconds}>
             {
@@ -24,10 +25,7 @@ const MessagesField = ({messages}: {messages: IMsg[]}) => {
                 getMessageDate(messages[index - 1].createdAt.toDate()) !== getMessageDate(msg.createdAt.toDate()) &&
                 <ChatDate date={getMessageDate(msg.createdAt.toDate())} />
               : // if this is the first message
-                <>
-                <ChatStart />
                 <ChatDate date={getMessageDate(msg.createdAt.toDate())} />
-                </>
             } 
             <Message {...msg} />
           </React.Fragment>
