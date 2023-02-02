@@ -14,7 +14,7 @@ const MessagesField = ({messages}: {messages: IMsg[]}) => {
   const chatContext = useContext(ChatContext)
 
   return <>
-    <Box sx={{overflowY: 'auto'}} width='100%' position='absolute' top={0} bottom='56px'>
+    <Box sx={{overflowY: 'auto', userSelect: 'initial'}} width='100%' position='absolute' top={0} bottom='56px'>
       <Box height='100%' display='flex' flexDirection='column'>
         <ChatStart />
         {messages.map((msg, index) =>

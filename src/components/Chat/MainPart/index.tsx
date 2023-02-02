@@ -1,16 +1,20 @@
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import { Alert, Box, Grid, Paper, Snackbar, Typography, useTheme } from '@mui/material';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
-import { Footer, MessagesField } from '..';
-import { FirebaseContext } from '../../MainConf';
-import { ChatContext } from '../../reducer/ChatContext';
-import { IMsg } from '../../types/messageTypes';
+import { Footer, MessagesField } from '../..';
+import { FirebaseContext } from '../../../MainConf';
+import { ChatContext } from '../../../reducer/ChatContext';
+import { IMsg } from '../../../types/messageTypes';
+import { backgroundImage } from '../../../utils/colors';
+import { DraggedImages } from './components';
 
 const MainPart = () => {
   const {firestore} = useContext(FirebaseContext)
   const chatContext = useContext(ChatContext)
   const [messages, setMessages] = useState<IMsg[] | null>(null)
   const [isDragged, setIsDragged] = useState(false)
+  const [error, setError] = useState(false)
+  const theme = useTheme()
   
   useEffect(() => {
     if (chatContext?.state) {
@@ -26,12 +30,22 @@ const MainPart = () => {
 
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
+
+    const type = e.dataTransfer.files[0].type
+    if (!(type.includes('png') || type.includes('jpg')
+    || type.includes('jpeg') || type.includes('webp'))) {
+      setError(true)
+      setIsDragged(false)
+      return // if not an img
+    }
+
     chatContext?.setImages(e.dataTransfer.files)
     setIsDragged(false)
   }
 
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
+    if (chatContext?.images) return
     setIsDragged(true)
   }
 
@@ -42,24 +56,33 @@ const MainPart = () => {
 
   return <>
     {messages ?
-      <Grid container flex={1} position='relative' onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+      <Grid
+        container flex={1} position='relative'
+        onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}
+        sx={{'& *': {
+          pointerEvents: isDragged ? 'none' : 'auto'
+        }}}
+      >
         <MessagesField messages={messages} />
         <Footer />
-        {isDragged && 
-          <Box
-            position='absolute' width='100%' height='100%'
-            sx={{backgroundColor: 'rgb(0 0 0 / 50%)'}}
-          >
+        <Box
+          position='absolute' width='100%' height='100%'
+          display={'flex'}
+          sx={{
+            backgroundColor: theme.palette.background.default,
+            backgroundImage: backgroundImage,
+            border: '5px dashed white',
+            zIndex: !isDragged ? -1 : 1,
+            transform: `translateX(${!isDragged ? '100%' : 0})`,
+            transition: `${theme.transitions.duration.shortest}ms ease`
+          }}
+        >
+          <Typography sx={{m: 'auto'}} variant="h2">
             Drop files here
-          </Box>
-        }
+          </Typography>
+        </Box>
         {chatContext?.images &&
-          <Box
-            position='absolute' width='100%' height='100%'
-            sx={{backgroundColor: 'rgb(0 0 0 / 50%)'}}
-          >
-            {chatContext.images.item(0)?.name}
-          </Box>
+          <DraggedImages />
         }
       </Grid>
     :
@@ -74,6 +97,11 @@ const MainPart = () => {
         </Paper>
       </Box>
     }
+    <Snackbar open={error} autoHideDuration={6000} onClose={() => setError(false)}>
+      <Alert onClose={() => setError(false)} severity="error" sx={{ width: '100%' }}>
+        Nope! Only png, jpg, jpeg and webp!
+      </Alert>
+    </Snackbar>
   </>
 }
 

@@ -7,6 +7,7 @@ import './App.css'
 import { AppRouter, Navbar } from './components'
 import { FirebaseContext } from './MainConf'
 import CircularProgress from '@mui/material/CircularProgress'
+import { backgroundImage } from './utils/colors'
 
 function App() {
   const {auth} = useContext(FirebaseContext)
@@ -16,13 +17,12 @@ function App() {
   return (
     <Box sx={{
       background: theme.palette.background.default,
-      flex: 1,
-      display: 'flex',
-      justifyContent: 'center',
+      flex: 1, display: 'flex', justifyContent: 'center',
       p: '20px 0',
       '@media (max-width: 1450px)': {
         p: 0,
-      }
+      },
+      overflow: 'hidden', userSelect: 'none'
     }}>
       <Box sx={{color: theme.palette.text.primary,
         fontFamily: theme.typography.fontFamily,
@@ -42,7 +42,7 @@ function App() {
               display: 'flex',
               flexDirection: 'column',
               background: theme.palette.background.default,
-              backgroundImage: 'linear-gradient(rgba(255 255 255 / 0.02), rgba(255 255 255 / 0.02))'
+              backgroundImage: backgroundImage
             }}>
               <AppRouter />
             </Box>
