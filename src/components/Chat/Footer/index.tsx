@@ -8,8 +8,9 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../../../MainConf';
 import { ChatContext } from '../../../reducer/ChatContext';
 import { audioDuration } from '../../../types/messageTypes';
-import { Attach, Record } from './components';
-import { MessageInput } from '../../UI';
+import { Record } from './components';
+import { MessageInput, AttachFile } from '../../UI';
+import ImageIcon from '@mui/icons-material/Image';
 
 export interface SendMessageProps {
   audioBlob: Blob,
@@ -98,7 +99,7 @@ const Footer = () => {
       }}
       p={1} gap={1}
     >
-      <Attach />
+      <AttachFile Icon={ImageIcon} acceptFiles='.jpg, .webp, .jpeg, .png' />
       <MessageInput {...{value, setValue, SendMessage}} />
       <Box display='flex' alignItems='flex-end'>
         {value ? // if the user wrote somthing, shows send button
