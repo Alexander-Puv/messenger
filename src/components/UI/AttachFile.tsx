@@ -17,7 +17,7 @@ const AttachFile = ({acceptFiles, Icon}: AttachFileProps) => {
   return (
     <div>
       <input
-        onChange={e => e.target.files && chatContext?.setImages(e.target.files)}
+        onChange={e => e.target.files && chatContext?.setImages([...e.target.files])}
         type='file' ref={inputRef}
         accept={acceptFiles}
         multiple

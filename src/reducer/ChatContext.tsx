@@ -7,7 +7,7 @@ export const ChatContext = createContext<ChatContextProps | null>(null)
 export const ChatContextProvider = ({children}: IChatContextProvider) => {
   const [state, dispatch] = useReducer(ChatReducer, initial_state)
   const [loadingMessage, setLoadingMessage] = useState<LoadingMessage | null>(null)
-  const [images, setImages] = useState<FileList | null>(null)
+  const [images, setImages] = useState<File[] | null>(null)
 
   return (
     <ChatContext.Provider value={{

@@ -39,7 +39,8 @@ const MainPart = () => {
       return // if not an img
     }
 
-    chatContext?.setImages(e.dataTransfer.files)
+    const images = [...e.dataTransfer.files]
+    chatContext?.setImages(chatContext.images ? chatContext.images.concat(images) : images)
     setIsDragged(false)
   }
 

@@ -7,8 +7,8 @@ export interface ChatContextProps {
   dispatch: React.Dispatch<ChatActionType>,
   loadingMessage: LoadingMessage,
   setLoadingMessage: (prop: LoadingMessage) => void,
-  images: FileList | null,
-  setImages: (prop: FileList | null) => void,
+  images: File[] | null,
+  setImages: (prop: File[] | null) => void,
 }
 
 interface ILoadingMessage {
