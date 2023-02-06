@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ChatContext } from '../../../../reducer/ChatContext';
 import { backgroundImage } from '../../../../utils/colors';
 import CloseIcon from '@mui/icons-material/Close';
-import SendIcon from '@mui/icons-material/Close';
+import SendIcon from '@mui/icons-material/Send';
 import IconButton from '@mui/material/IconButton';
 import { MessageInput } from '../../../UI';
 
@@ -35,9 +35,12 @@ const DraggedImages = () => {
 
   return (
     <Box
-      onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={() => setIsDragged(false)}
-      position='absolute' width='100%' height='100%'
+      onDragOver={onDragOver} onDragLeave={onDragLeave}
+      onDrop={() => setIsDragged(false)}
+      position='absolute' p={2.5}
+      height='100%' width='100%'
       display='flex' flexDirection='column'
+      justifyContent='space-between' 
       sx={{
         backgroundColor: theme.palette.background.default,
         backgroundImage: backgroundImage,
@@ -46,19 +49,31 @@ const DraggedImages = () => {
         }
       }}
     >
-      <IconButton sx={{position: 'absolute', top: 10, left: 10}} onClick={close}>
-        <CloseIcon />
-      </IconButton>
-      <Box
-        display='flex' maxHeight='100%'
-        sx={{'img': {height: '100%', width: '100%', m: 'auto'}}}
-      >
-        <img src={URL.createObjectURL(chatContext.images[itemNumber])} alt="" />
-      </Box>
-      <Box></Box>
+        <IconButton sx={{position: 'absolute', top: 10, left: 10}} onClick={close}>
+          <CloseIcon />
+        </IconButton>
+        <Box
+          display='flex' flex={1} mb={2.5}
+          sx={{
+            background: `url(${URL.createObjectURL(chatContext.images[itemNumber])})
+            no-repeat center`, backgroundSize: 'contain'
+          }}
+        />
+        <Box display='flex' mb={2.5} sx={{'img': {maxHeight: 75}}}>
+          {chatContext.images.map((img, i) =>
+            <img src={URL.createObjectURL(img)} alt="" key={i} />
+          )}
+        </Box>
+        <Box display='flex'>
+          <MessageInput {...{value, setValue, SendMessage}}  />
+          <IconButton>
+            <SendIcon />
+          </IconButton>
+        </Box>
       {/* if isDragged */}
       <Box
-        position='absolute' display='flex'
+        position='absolute' top={0} left={0}
+        display='flex'
         width='100%' height='100%'
         zIndex={isDragged ? 2 : -1}
       >

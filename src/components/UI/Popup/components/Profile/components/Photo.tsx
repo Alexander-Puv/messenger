@@ -30,9 +30,9 @@ const Photo = () => {
     setIsLoading(true)
     const file = photo
     setPhoto(null)
-    const audioRef = ref(storage, `userPhoto/${user.uid}`)
-    await uploadBytes(audioRef, file)
-    await getDownloadURL(audioRef).then(url => {
+    const photoRef = ref(storage, `userPhoto/${user.uid}`)
+    await uploadBytes(photoRef, file)
+    await getDownloadURL(photoRef).then(url => {
       changePhoto(url)
     })
   }

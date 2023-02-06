@@ -27,14 +27,14 @@ export const settings: ISetting[] = [
   {
     title: PROFILE,
     onClick: ({setPopup}) => {
-      setPopup({title: PROFILE, content: "Nothing's here for now", btnText: 'OK'}) // <ProfileContent />
+      setPopup({title: PROFILE, content: <ProfileContent />, btnText: 'OK'})
     }
   },
   {
     title: SETTINGS,
     onClick: ({setPopup}) => {
       setPopup({
-        title: SETTINGS, content: <SettingsContent />, btnText: 'OK',
+        title: SETTINGS, content: "Nothing's here for now", btnText: 'OK', //<SettingsContent />
         secondBtnProps: {sx: {color: greenColor}, children: 'Apply'}
       })
     }

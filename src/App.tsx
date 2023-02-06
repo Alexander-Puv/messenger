@@ -1,12 +1,12 @@
 import { useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
-import { useState, useContext } from 'react'
+import CircularProgress from '@mui/material/CircularProgress'
+import { useContext } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { BrowserRouter } from 'react-router-dom'
 import './App.css'
-import { AppRouter, Navbar } from './components'
 import { FirebaseContext } from './MainConf'
-import CircularProgress from '@mui/material/CircularProgress'
+import { AppRouter, Navbar } from './components'
 import { backgroundImage } from './utils/colors'
 
 function App() {
