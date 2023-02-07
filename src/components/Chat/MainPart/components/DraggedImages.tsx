@@ -44,9 +44,6 @@ const DraggedImages = () => {
       sx={{
         backgroundColor: theme.palette.background.default,
         backgroundImage: backgroundImage,
-        'img': {
-          pointerEvents: 'none'
-        }
       }}
     >
         <IconButton sx={{position: 'absolute', top: 10, left: 10}} onClick={close}>
@@ -59,13 +56,23 @@ const DraggedImages = () => {
             no-repeat center`, backgroundSize: 'contain'
           }}
         />
-        <Box display='flex' mb={2.5} sx={{'img': {maxHeight: 75}}}>
+        <Box display='flex' justifyContent='center' mb={2.5} >
           {chatContext.images.map((img, i) =>
-            <img src={URL.createObjectURL(img)} alt="" key={i} />
+            <Box
+            display='flex' m='0 5px' 
+            sx={{'img': {
+              boxSizing: 'content-box', p: '5px', maxHeight: 75,
+              border: `1px solid ${itemNumber === i ? theme.palette.primary.dark : 'transparent'}`
+            }}} key={i}>
+              <img
+                src={URL.createObjectURL(img)} alt=""
+                onClick={() => setItemNumber(i)}
+              />
+            </Box>
           )}
         </Box>
         <Box display='flex'>
-          <MessageInput {...{value, setValue, SendMessage}}  />
+          <MessageInput {...{value, setValue, SendMessage}} />
           <IconButton>
             <SendIcon />
           </IconButton>
