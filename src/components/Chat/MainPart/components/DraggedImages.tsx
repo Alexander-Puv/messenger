@@ -1,10 +1,10 @@
+import CloseIcon from '@mui/icons-material/Close';
+import SendIcon from '@mui/icons-material/Send';
 import { Box, Typography, useTheme } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 import { useContext, useEffect, useState } from 'react';
 import { ChatContext } from '../../../../reducer/ChatContext';
 import { backgroundImage } from '../../../../utils/colors';
-import CloseIcon from '@mui/icons-material/Close';
-import SendIcon from '@mui/icons-material/Send';
-import IconButton from '@mui/material/IconButton';
 import { MessageInput } from '../../../UI';
 
 const DraggedImages = () => {

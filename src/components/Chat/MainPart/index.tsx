@@ -57,35 +57,35 @@ const MainPart = () => {
 
   return <>
     {messages ?
-      <Grid
-        container flex={1} position='relative'
-        onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}
-        sx={{'& *': {
-          pointerEvents: isDragged ? 'none' : 'auto'
-        }}}
-      >
-        <MessagesField messages={messages} />
-        <Footer />
-        <Box
-          position='absolute' width='100%' height='100%'
-          display={'flex'}
-          sx={{
-            backgroundColor: theme.palette.background.default,
-            backgroundImage: backgroundImage,
-            border: '5px dashed white',
-            zIndex: !isDragged ? -1 : 1,
-            transform: `translateX(${!isDragged ? '100%' : 0})`,
-            transition: `${theme.transitions.duration.shortest}ms ease`
-          }}
+        <Grid
+          container flex={1} position='relative'
+          onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}
+          sx={{'& *': {
+            pointerEvents: isDragged ? 'none' : 'auto'
+          }}}
         >
-          <Typography sx={{m: 'auto'}} variant="h2">
-            Drop files here
-          </Typography>
-        </Box>
-        {chatContext?.images &&
-          <DraggedImages />
-        }
-      </Grid>
+          {!chatContext?.images ? <>
+            <MessagesField messages={messages} />
+            <Footer />
+            <Box
+              position='absolute' width='100%' height='100%'
+              display={'flex'}
+              sx={{
+                backgroundColor: theme.palette.background.default,
+                backgroundImage: backgroundImage,
+                border: '5px dashed white',
+                zIndex: !isDragged ? -1 : 1,
+                transform: `translateX(${!isDragged ? '100%' : 0})`,
+                transition: `${theme.transitions.duration.shortest}ms ease`
+              }}
+            >
+              <Typography sx={{m: 'auto'}} variant="h2">
+                Drop files here
+              </Typography>
+            </Box>
+          </>
+          : <DraggedImages />}
+        </Grid>
     :
       <Box display='flex' flexGrow={1}>
         <Paper sx={{display: 'flex', maxWidth: 650, minHeight: 200, p: 2, m: 'auto'}}>
