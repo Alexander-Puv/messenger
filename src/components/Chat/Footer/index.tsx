@@ -1,91 +1,21 @@
-import SendIcon from '@mui/icons-material/Send';
-import { Box, Grid, IconButton, TextField } from '@mui/material';
-import useTheme from '@mui/material/styles/useTheme';
-import { Timestamp, arrayUnion, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { useContext, useState } from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { FirebaseContext } from '../../../MainConf';
-import { ChatContext } from '../../../reducer/ChatContext';
-import { audioDuration } from '../../../types/messageTypes';
-import { Record } from './components';
-import { MessageInput, AttachFile } from '../../UI';
 import ImageIcon from '@mui/icons-material/Image';
-
-export interface SendMessageProps {
-  audioBlob: Blob,
-  audioDuration: audioDuration
-}
+import SendIcon from '@mui/icons-material/Send';
+import { Box, Grid, IconButton } from '@mui/material';
+import useTheme from '@mui/material/styles/useTheme';
+import { useContext, useState } from 'react';
+import { ChatContext } from '../../../reducer/ChatContext';
+import { AttachFile, MessageInput } from '../../UI';
+import { Record } from './components';
 
 const Footer = () => {
-  const {auth, firestore, storage} = useContext(FirebaseContext)
-  const [user] = useAuthState(auth)
   const [value, setValue] = useState('')
   const [isRecording, setIsRecording] = useState(false)
   const chatContext = useContext(ChatContext)
   const theme = useTheme()
 
-  const SendMessage = async (audioData?: SendMessageProps) => {
+  const SendMessage = () => {
     isRecording && setIsRecording(false)
-    if (chatContext?.state && user) { // it is always true here
-      const createdAt = Timestamp.now()
-
-      let val;
-      let audioDuration
-      if (audioData) {
-        const audioRef = ref(storage, `voiceMessages/${chatContext.state.chatId}/${createdAt.nanoseconds + user.uid}`)
-        await uploadBytes(audioRef, audioData.audioBlob)
-        await getDownloadURL(audioRef).then(url => {
-          val = url
-        })
-        audioDuration = {
-          string: audioData.audioDuration.string,
-          number: audioData.audioDuration.number
-        }
-      } else {
-        val = value
-        setValue('')
-      }
-      
-      // add message
-      chatContext.setLoadingMessage(null)
-      await updateDoc(doc(firestore, 'chats', chatContext.state.chatId), {
-        messages: arrayUnion({
-          uid: user.uid,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          // if there is audioData, val is url, otherwise val is text
-          text: audioData ? null : val,
-          audioData: audioData ? {
-            audioUrl: val,
-            audioDuration
-          } : null,
-          createdAt
-        })
-      })
-      
-      if (chatContext.state.user) { // it is always true here
-        // change users last message
-        await updateDoc(doc(firestore, 'userChats', chatContext.state.user.uid), {
-          [chatContext.state.chatId + '.lastMessage']: {
-            value: audioData ? null : val,
-            audioData: audioData ? {
-              audioDuration
-            } : null
-          },
-          [chatContext.state.chatId + '.date']: serverTimestamp()
-        })
-        await updateDoc(doc(firestore, 'userChats', user.uid), {
-          [chatContext.state.chatId + '.lastMessage']: {
-            value: audioData ? null : val,
-            audioData: audioData ? {
-              audioDuration
-            } : null
-          },
-          [chatContext.state.chatId + '.date']: serverTimestamp()
-        })
-      }
-    }
+    chatContext?.SendMessage({value, setValue})
   }
 
   return (
@@ -110,7 +40,6 @@ const Footer = () => {
           <Record
             isRecording={isRecording}
             setIsRecording={setIsRecording}
-            SendMessage={SendMessage}
           />
         }
       </Box>

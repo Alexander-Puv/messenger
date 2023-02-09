@@ -9,14 +9,27 @@ export interface ChatContextProps {
   setLoadingMessage: (prop: LoadingMessage) => void,
   images: File[] | null,
   setImages: (prop: File[] | null) => void,
+  SendMessage: ({}: SendMessageProps) => void
 }
 
-interface ILoadingMessage {
+export type LoadingMessage = {
   duration?: audioDuration,
   text?: string,
   createdAt: Timestamp
+} | null
+
+export type SendMessageProps = SendMessageValue | SendMessageAudioData | (SendMessageImage & SendMessageValue)
+interface SendMessageValue {
+  value: string,
+  setValue: (prop: string) => void,
 }
-export type LoadingMessage = ILoadingMessage | null
+interface SendMessageAudioData {
+  audioBlob: Blob,
+  audioDuration: audioDuration,
+}
+interface SendMessageImage {
+  img: File[]
+}
 
 export interface IChatContextProvider {
   children: React.ReactNode

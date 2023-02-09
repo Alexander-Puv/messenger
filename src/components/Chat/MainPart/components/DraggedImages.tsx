@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ChatContext } from '../../../../reducer/ChatContext';
 import { backgroundImage } from '../../../../utils/colors';
 import { MessageInput } from '../../../UI';
+import { serverTimestamp } from 'firebase/firestore';
 
 const DraggedImages = () => {
   const chatContext = useContext(ChatContext)
@@ -31,7 +32,10 @@ const DraggedImages = () => {
     chatContext.setImages(null)
   }
 
-  const SendMessage = () => {}
+  const SendMessage = () => {
+    if (!chatContext.images) return // always false
+    chatContext.SendMessage({img: chatContext.images, value, setValue})
+  }
 
   return (
     <Box

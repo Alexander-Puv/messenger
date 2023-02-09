@@ -5,17 +5,15 @@ import { Box, IconButton, Typography } from '@mui/material';
 import useTheme from '@mui/material/styles/useTheme';
 import { useState, useContext } from 'react';
 import { redColor } from '../../../../utils/colors';
-import { SendMessageProps } from '..';
 import { ChatContext } from '../../../../reducer/ChatContext';
 import { Timestamp } from 'firebase/firestore';
 
 interface RecordProps {
   isRecording: boolean,
   setIsRecording: (isRecording: boolean) => void,
-  SendMessage: (audioData: SendMessageProps) => void
 }
 
-const Record = ({isRecording, setIsRecording, SendMessage}: RecordProps) => {
+const Record = ({isRecording, setIsRecording}: RecordProps) => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null)
   const chatContext = useContext(ChatContext)
   const theme = useTheme()
@@ -64,7 +62,7 @@ const Record = ({isRecording, setIsRecording, SendMessage}: RecordProps) => {
                     duration,
                     createdAt: Timestamp.now()
                   })
-                  SendMessage({
+                  chatContext?.SendMessage({
                     audioBlob: audioBlob,
                     audioDuration: duration
                   })
