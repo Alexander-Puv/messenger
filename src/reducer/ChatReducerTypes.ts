@@ -28,7 +28,7 @@ interface SendMessageAudioData {
   audioDuration: audioDuration,
 }
 interface SendMessageImage {
-  img: File[]
+  imgs: File[]
 }
 
 export interface IChatContextProvider {

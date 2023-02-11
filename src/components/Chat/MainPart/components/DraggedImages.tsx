@@ -1,8 +1,8 @@
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, CircularProgress, Typography, useTheme } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { ChatContext } from '../../../../reducer/ChatContext';
 import { backgroundImage } from '../../../../utils/colors';
 import { AttachFile, MessageInput } from '../../../UI';
@@ -15,11 +15,16 @@ const DraggedImages = () => {
   const [value, setValue] = useState('')
   const [itemNumber, setItemNumber] = useState(0)
   const [isDragged, setIsDragged] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    chatContext.images === null && setIsLoading(false)
+  }, [chatContext.images])
 
   const imageUrl = useMemo(() => {
     if (!chatContext?.images) return '' // always false
     return URL.createObjectURL(chatContext.images[itemNumber]);
-  }, [itemNumber]);
+  }, [chatContext.images, itemNumber]);
   
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -37,16 +42,26 @@ const DraggedImages = () => {
     chatContext.setImages(null)
   }
 
-  const SendMessage = () => {
+  const removeImg = (index: number) => {
     if (!chatContext.images) return // always false
-    chatContext.SendMessage({img: chatContext.images, value, setValue})
+    const splicedImages = [
+      ...chatContext.images.slice(0, index),
+      ...chatContext.images.slice(index + 1)
+    ]
+    chatContext.setImages(splicedImages)
+  }
+
+  const SendMessage = async () => {
+    if (!chatContext.images) return // always false
+    setIsLoading(true)
+    chatContext.SendMessage({imgs: chatContext.images, value, setValue})
   }
 
   return (
     <Box
       onDragOver={onDragOver} onDragLeave={onDragLeave}
       onDrop={() => setIsDragged(false)}
-      position='absolute' p={2.5}
+      position='absolute' p='16px 8px 8px'
       height='100%' width='100%'
       display='flex' flexDirection='column'
       justifyContent='space-between' 
@@ -69,15 +84,23 @@ const DraggedImages = () => {
         <Box display='flex' m='0 auto' gap='5px'>
         {chatContext.images.map((img, i) =>
           <Box
-          display='flex'
-          sx={{'img': {
-            boxSizing: 'content-box', p: '5px', maxHeight: 75,
-            border: `1px solid ${itemNumber === i ? theme.palette.primary.dark : 'transparent'}`
-          }}} key={i}>
+          display='flex' position='relative' p='5px'
+          border={`1px solid ${itemNumber === i ? theme.palette.primary.dark : 'transparent'}`}
+          sx={{
+            'img': {maxHeight: 75},
+            '&:hover svg': {opacity: 1}
+          }} key={i}>
             <img
               src={URL.createObjectURL(img)} alt=""
               onClick={() => setItemNumber(i)}
               draggable={false}
+            />
+            <CloseIcon
+              sx={{
+                position: 'absolute', top: 5, right: 5, opacity: 0, cursor: 'pointer',
+                transition: `${theme.transitions.duration.shortest}ms ease`
+              }}
+              onClick={() => removeImg(i)}
             />
           </Box>
         )}
@@ -89,10 +112,14 @@ const DraggedImages = () => {
         </Box>
         </Box>
       </Box>
-      <Box display='flex'>
+      <Box display='flex' gap={1}>
         <MessageInput {...{value, setValue, SendMessage}} />
-        <IconButton>
-          <SendIcon />
+        <IconButton onClick={SendMessage}>
+          {!isLoading ?
+            <SendIcon />
+          :
+            <CircularProgress sx={{height: '24px !important', width: '24px !important', m: 'auto'}} />
+          }
         </IconButton>
       </Box>
       {/* if isDragged */}

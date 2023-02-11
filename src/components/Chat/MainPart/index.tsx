@@ -64,7 +64,7 @@ const MainPart = () => {
             pointerEvents: isDragged ? 'none' : 'auto'
           }}}
         >
-          {!chatContext?.images ? <>
+          {!chatContext?.images || !chatContext?.images?.length ? <>
             <MessagesField messages={messages} />
             <Footer />
             <Box
