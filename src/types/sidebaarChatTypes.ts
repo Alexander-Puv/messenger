@@ -12,6 +12,7 @@ export interface ISidebarChat {
 export interface ILastMessage {
   audioData: ISidebarAudioData | null,
   value: string | null,
+  img: string | null
 }
 
 export interface ISidebarAudioData {

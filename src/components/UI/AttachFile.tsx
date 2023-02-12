@@ -2,7 +2,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import IconButton from '@mui/material/IconButton';
 import useTheme from '@mui/material/styles/useTheme';
 import { useContext, useRef } from 'react';
-import { ChatContext } from '../../reducer/ChatContext';
+import { ChatContext } from '../../reducer/ChatReducer/ChatContext';
 
 interface AttachFileProps {
   acceptFiles: string,

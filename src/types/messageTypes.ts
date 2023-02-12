@@ -6,6 +6,7 @@ export interface IMsg {
   photoURL: string,
   text: string | null,
   audioData: audioData | null,
+  imgs: imgsData,
   createdAt: Timestamp,
   isLoading?: boolean
 }
@@ -18,4 +19,9 @@ export interface audioData {
 export interface audioDuration {
   string: string,
   number: number
+}
+
+export interface imgsData {
+  urls: string[] | null,
+  
 }

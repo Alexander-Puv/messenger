@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import { Timestamp, doc, onSnapshot } from 'firebase/firestore';
 import React, { useContext, useEffect, useState } from 'react';
 import { FirebaseContext } from '../../../MainConf';
-import { ChatContext } from '../../../reducer/ChatContext';
+import { ChatContext } from '../../../reducer/ChatReducer/ChatContext';
 import { IMsg } from '../../../types/messageTypes';
 import { ChatDate, ChatStart, Message } from './components';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -37,6 +37,7 @@ const MessagesField = ({messages}: {messages: IMsg[]}) => {
               audioUrl: ''
             } : null}
             text={chatContext.loadingMessage.text ?? null}
+            imgs={{urls: null}} // images are loading in DraggedImages (for now)
             createdAt={chatContext.loadingMessage.createdAt}
             displayName={user.displayName ?? ''}
             photoURL={user.photoURL ?? ''}

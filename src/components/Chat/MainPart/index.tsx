@@ -3,7 +3,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
 import { Footer, MessagesField } from '../..';
 import { FirebaseContext } from '../../../MainConf';
-import { ChatContext } from '../../../reducer/ChatContext';
+import { ChatContext } from '../../../reducer/ChatReducer/ChatContext';
 import { IMsg } from '../../../types/messageTypes';
 import { backgroundImage } from '../../../utils/colors';
 import { DraggedImages } from './components';

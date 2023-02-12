@@ -3,7 +3,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { Box, Grid, IconButton } from '@mui/material';
 import useTheme from '@mui/material/styles/useTheme';
 import { useContext, useState } from 'react';
-import { ChatContext } from '../../../reducer/ChatContext';
+import { ChatContext } from '../../../reducer/ChatReducer/ChatContext';
 import { AttachFile, MessageInput } from '../../UI';
 import { Record } from './components';
 
@@ -15,7 +15,7 @@ const Footer = () => {
 
   const SendMessage = () => {
     isRecording && setIsRecording(false)
-    chatContext?.SendMessage({value, setValue})
+    chatContext?.SendMessage({text: {value, setValue}})
   }
 
   return (

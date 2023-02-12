@@ -1,6 +1,7 @@
+import { Timestamp } from 'firebase/firestore'
 import React from 'react'
-import { DocumentData, Timestamp } from 'firebase/firestore'
-import { audioDuration } from '../types/messageTypes'
+import { ChatActionType, IChatState } from './ChatReducerTypes'
+import { audioDuration } from '../../../types/messageTypes'
 
 export interface ChatContextProps {
   state: IChatState,
@@ -12,48 +13,40 @@ export interface ChatContextProps {
   SendMessage: ({}: SendMessageProps) => void
 }
 
+
 export type LoadingMessage = {
-  duration?: audioDuration,
   text?: string,
+  duration?: audioDuration,
+  // make for img
   createdAt: Timestamp
 } | null
 
-export type SendMessageProps = SendMessageValue | SendMessageAudioData | (SendMessageImage & SendMessageValue)
-interface SendMessageValue {
+
+export type SendMessageProps = {
+  text?: SendMessageText,
+  audio?: SendMessageAudioData,
+  image?: SendMessageImage
+}
+
+interface SendMessageText {
   value: string,
   setValue: (prop: string) => void,
 }
+
 interface SendMessageAudioData {
   audioBlob: Blob,
   audioDuration: audioDuration,
 }
+
 interface SendMessageImage {
-  imgs: File[]
+  imgs: File[],
+  imgProps: {
+    width: number,
+    height: number
+  }
 }
+
 
 export interface IChatContextProvider {
   children: React.ReactNode
 }
-
-
-
-export interface IChatState {
-  chatId: string,
-  user: DocumentData | null
-}
-
-
-
-export enum ChatActionTypes {
-  CHANGE_USER = 'CHANGE_USER'
-}
-
-interface ChangeUserAction {
-  type: ChatActionTypes.CHANGE_USER,
-  payload: {
-    currentUser: DocumentData,
-    anotherUser: DocumentData,
-  }
-}
-
-export type ChatActionType = ChangeUserAction

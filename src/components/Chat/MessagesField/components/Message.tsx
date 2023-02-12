@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import { blue, blueGrey } from '@mui/material/colors'
 import { useContext, useLayoutEffect, useRef } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { VoiceMessage } from '.'
+import { ImageMessage, VoiceMessage } from '.'
 import { FirebaseContext } from '../../../../MainConf'
 import { IMsg } from '../../../../types/messageTypes'
 
@@ -13,6 +13,7 @@ const Message = (msg: IMsg) => {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const boxRef = useRef<HTMLDivElement | null>(null);
+  const minutes = msg.createdAt.toDate().getMinutes()
 
   useLayoutEffect(() => {
     boxRef.current?.scrollIntoView({behavior: 'auto'})
@@ -35,11 +36,14 @@ const Message = (msg: IMsg) => {
             </svg>
           </Box>
         }
-        <Box display='flex' flexDirection='column' gap={.5} p='4px 8px' alignItems={user?.uid === msg.uid ? 'flex-end' : 'flex-start'}
+        <Box
+          position='relative'
+          display='flex' flexDirection='column'
+          alignItems={user?.uid === msg.uid ? 'flex-end' : 'flex-start'}
+          gap={.5} p='4px 8px'
+          border={'1px solid' + (user?.uid === msg.uid ? blue[200] : blueGrey[400])}
+          borderRadius='7.5px'
           sx={{
-            position: 'relative',
-            border: '1px solid ' + (user?.uid === msg.uid ? blue[200] : blueGrey[400]),
-            borderRadius: '7.5px',
             borderTopRightRadius: user?.uid === msg.uid ? 0 : 'auto',
             borderTopLeftRadius: user?.uid === msg.uid ? 'auto' : 0,
           }}
@@ -53,9 +57,10 @@ const Message = (msg: IMsg) => {
           >
             <Typography variant='caption' component="h4">{msg.displayName}</Typography>
             <Typography variant='caption' component="h4">
-              {msg.createdAt.toDate().getHours() + ':' + msg.createdAt.toDate().getMinutes()}
+              {msg.createdAt.toDate().getHours() + ':' + (minutes < 10 ? `0${minutes}` : minutes)}
             </Typography>
           </Box>
+          {msg.imgs && <ImageMessage {...msg.imgs} />}
           {msg.text && <Typography>{msg.text}</Typography>}
           {msg.audioData && <VoiceMessage audioData={msg.audioData} isLoading={msg.isLoading} />}
         </Box>

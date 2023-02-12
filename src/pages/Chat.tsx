@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid';
 import { Sidebar, MainPart } from '../components';
-import { ChatContextProvider } from '../reducer/ChatContext';
+import { ChatContextProvider } from '../reducer/ChatReducer/ChatContext';
 
 const Chat = () => {
   

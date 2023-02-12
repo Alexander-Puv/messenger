@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useReducer, useState } from 'react'
-import { ChatContextProps, IChatContextProvider, LoadingMessage, SendMessageProps } from './ChatReducerTypes'
+import { ChatContextProps, IChatContextProvider, LoadingMessage, SendMessageProps } from './types/ChatContextTypes'
 import { ChatReducer, initial_state } from './ChatReducer'
-import { audioDuration } from '../types/messageTypes'
-import { FirebaseContext } from '../MainConf'
+import { audioDuration } from '../../types/messageTypes'
+import { FirebaseContext } from '../../MainConf'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { Timestamp, arrayUnion, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
@@ -16,34 +16,38 @@ export const ChatContextProvider = ({children}: IChatContextProvider) => {
   const [loadingMessage, setLoadingMessage] = useState<LoadingMessage | null>(null)
   const [images, setImages] = useState<File[] | null>(null)
 
-  const SendMessage = async (props: SendMessageProps) => {
+  const SendMessage = async ({audio, image, text}: SendMessageProps) => {
     if (user) { // it is always true here
       const createdAt = Timestamp.now()
 
-      let val
+      let val // text or audio url
       let audioDuration
-      const images: string[] = []
-      if ('audioBlob' in props && 'audioDuration' in props) {
+      const urls: string[] = [] // image URLs
+      let aspectRatio // image aspect ratio
+
+      if (audio) {
         const audioRef = ref(storage, `voiceMessages/${state.chatId}/${createdAt.nanoseconds + user.uid}`)
-        await uploadBytes(audioRef, props.audioBlob)
+        await uploadBytes(audioRef, audio.audioBlob)
         await getDownloadURL(audioRef).then(url => {
           val = url
         })
         audioDuration = {
-          string: props.audioDuration.string,
-          number: props.audioDuration.number
+          string: audio.audioDuration.string,
+          number: audio.audioDuration.number
         }
-      } else if ('value' in props && 'setValue' in props) {
-        val = props.value
-        props.setValue('')
-        if('imgs' in props && Array.isArray(props.imgs)) {
-          const imgs = props.imgs as File[]
+      } else if (text) {
+        val = text.value
+        text.setValue('')
+        if(image) {
+          aspectRatio = image.imgProps.width / image.imgProps.height
+
+          const imgs = image.imgs as File[]
           const blobArray = imgs.map(img => new Blob([img], { type: img.type }))
           const promises = blobArray.map(async blob => {
             const imagesRef = ref(storage, `photoMessages/${state.chatId}/${createdAt.nanoseconds + user.uid + blob.size}`)
             await uploadBytes(imagesRef, blob)
             await getDownloadURL(imagesRef).then(url => {
-              images.push(url)
+              urls.push(url)
               console.log(url)
             })
           })
@@ -58,13 +62,16 @@ export const ChatContextProvider = ({children}: IChatContextProvider) => {
           uid: user.uid,
           displayName: user.displayName,
           photoURL: user.photoURL,
-          // if there is audioData, val is url, otherwise val is text
+          // if there is audioDuration, val is url, otherwise val is text
           text: audioDuration ? null : val,
           audioData: audioDuration ? {
             audioUrl: val,
             audioDuration
           } : null,
-          imgs: images.length ? images : null,
+          imgs: urls.length ? {
+            urls,
+            aspectRatio
+          } : null,
           createdAt
         })
       })
@@ -74,8 +81,7 @@ export const ChatContextProvider = ({children}: IChatContextProvider) => {
         audioData: audioDuration ? {
           audioDuration
         } : null,
-        // checking isArray just to not see an issue from ts
-        img: images.length ? images[0] : null,
+        img: urls.length ? urls[0]: null,
       }
       if (state.user) { // it is always true here
         // change users last message

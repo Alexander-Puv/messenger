@@ -1,4 +1,4 @@
-import { ChatActionType, ChatActionTypes, IChatState } from "./ChatReducerTypes";
+import { ChatActionType, ChatActionTypes, IChatState } from "./types/ChatReducerTypes";
 
 export const initial_state: IChatState = {
   chatId: 'null',

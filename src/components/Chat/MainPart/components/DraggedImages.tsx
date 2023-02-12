@@ -1,12 +1,12 @@
+import AddPhotoIcon from '@mui/icons-material/AddPhotoAlternate';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
 import { Box, CircularProgress, Typography, useTheme } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { ChatContext } from '../../../../reducer/ChatContext';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { ChatContext } from '../../../../reducer/ChatReducer/ChatContext';
 import { backgroundImage } from '../../../../utils/colors';
 import { AttachFile, MessageInput } from '../../../UI';
-import AddPhotoIcon from '@mui/icons-material/AddPhotoAlternate';
 
 const DraggedImages = () => {
   const chatContext = useContext(ChatContext)
@@ -16,6 +16,7 @@ const DraggedImages = () => {
   const [itemNumber, setItemNumber] = useState(0)
   const [isDragged, setIsDragged] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const imgRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
     chatContext.images === null && setIsLoading(false)
@@ -52,9 +53,18 @@ const DraggedImages = () => {
   }
 
   const SendMessage = async () => {
-    if (!chatContext.images) return // always false
+    if (!chatContext.images || !imgRef.current) return // always false
     setIsLoading(true)
-    chatContext.SendMessage({imgs: chatContext.images, value, setValue})
+    chatContext.SendMessage({
+      image: {
+        imgs: chatContext.images,
+        imgProps: {
+          height: imgRef.current.height,
+          width: imgRef.current.width
+        },
+      },
+      text: {value, setValue}
+    })
   }
 
   return (
@@ -94,6 +104,7 @@ const DraggedImages = () => {
               src={URL.createObjectURL(img)} alt=""
               onClick={() => setItemNumber(i)}
               draggable={false}
+              ref={i === 0 ? imgRef : undefined}
             />
             <CloseIcon
               sx={{
