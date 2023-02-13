@@ -1,12 +1,13 @@
 import AddPhotoIcon from '@mui/icons-material/AddPhotoAlternate';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
-import { Box, CircularProgress, Typography, useTheme } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import { Box, CircularProgress, Typography, useTheme, IconButton } from '@mui/material';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ChatContext } from '../../../../reducer/ChatReducer/ChatContext';
 import { backgroundImage } from '../../../../utils/colors';
 import { AttachFile, MessageInput } from '../../../UI';
+import ImagesList from './ImagesList';
+import { SendMessageImage, SendMessageProps } from '../../../../reducer/ChatReducer/types/ChatContextTypes';
 
 const DraggedImages = () => {
   const chatContext = useContext(ChatContext)
@@ -16,7 +17,6 @@ const DraggedImages = () => {
   const [itemNumber, setItemNumber] = useState(0)
   const [isDragged, setIsDragged] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const imgRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
     chatContext.images === null && setIsLoading(false)
@@ -43,27 +43,32 @@ const DraggedImages = () => {
     chatContext.setImages(null)
   }
 
-  const removeImg = (index: number) => {
-    if (!chatContext.images) return // always false
-    const splicedImages = [
-      ...chatContext.images.slice(0, index),
-      ...chatContext.images.slice(index + 1)
-    ]
-    chatContext.setImages(splicedImages)
-  }
-
   const SendMessage = async () => {
-    if (!chatContext.images || !imgRef.current) return // always false
+    if (!chatContext.images) return // always false
     setIsLoading(true)
-    chatContext.SendMessage({
-      image: {
-        imgs: chatContext.images,
-        imgProps: {
-          height: imgRef.current.height,
-          width: imgRef.current.width
-        },
-      },
-      text: {value, setValue}
+    
+    const aspectRatio: number[] = []
+    chatContext.images.map(image => {
+      const newImage = new Image();
+      newImage.src = URL.createObjectURL(image)
+      newImage.onload = function() {
+        const thisAspectRatio = newImage.width / newImage.height;
+        aspectRatio.push(thisAspectRatio)
+        console.log(aspectRatio)
+        
+        if (!chatContext.images) return // always false
+        chatContext.images[chatContext.images.length - 1] === image
+          && chatContext.SendMessage({
+            images: chatContext.images.map((img, i) => {
+              console.log(aspectRatio[i])
+              return {
+                img,
+                aspectRatio: aspectRatio[i]
+              }
+            }),
+            text: {value, setValue}
+          })
+      }
     })
   }
 
@@ -93,27 +98,10 @@ const DraggedImages = () => {
       <Box display='flex' mb={2.5} sx={{overflowX: 'auto'}}>
         <Box display='flex' m='0 auto' gap='5px'>
         {chatContext.images.map((img, i) =>
-          <Box
-          display='flex' position='relative' p='5px'
-          border={`1px solid ${itemNumber === i ? theme.palette.primary.dark : 'transparent'}`}
-          sx={{
-            'img': {maxHeight: 75},
-            '&:hover svg': {opacity: 1}
-          }} key={i}>
-            <img
-              src={URL.createObjectURL(img)} alt=""
-              onClick={() => setItemNumber(i)}
-              draggable={false}
-              ref={i === 0 ? imgRef : undefined}
-            />
-            <CloseIcon
-              sx={{
-                position: 'absolute', top: 5, right: 5, opacity: 0, cursor: 'pointer',
-                transition: `${theme.transitions.duration.shortest}ms ease`
-              }}
-              onClick={() => removeImg(i)}
-            />
-          </Box>
+          <ImagesList
+            key={i} img={img} index={i}
+            itemNumber={itemNumber} setItemNumber={setItemNumber}
+          />
         )}
         <Box
           display='flex' justifyContent='center'

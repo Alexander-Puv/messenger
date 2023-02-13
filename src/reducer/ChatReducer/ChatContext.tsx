@@ -16,14 +16,13 @@ export const ChatContextProvider = ({children}: IChatContextProvider) => {
   const [loadingMessage, setLoadingMessage] = useState<LoadingMessage | null>(null)
   const [images, setImages] = useState<File[] | null>(null)
 
-  const SendMessage = async ({audio, image, text}: SendMessageProps) => {
+  const SendMessage = async ({audio, images, text}: SendMessageProps) => {
     if (user) { // it is always true here
       const createdAt = Timestamp.now()
 
       let val // text or audio url
       let audioDuration
       const urls: string[] = [] // image URLs
-      let aspectRatio // image aspect ratio
 
       if (audio) {
         const audioRef = ref(storage, `voiceMessages/${state.chatId}/${createdAt.nanoseconds + user.uid}`)
@@ -38,25 +37,31 @@ export const ChatContextProvider = ({children}: IChatContextProvider) => {
       } else if (text) {
         val = text.value
         text.setValue('')
-        if(image) {
-          aspectRatio = image.imgProps.width / image.imgProps.height
 
-          const imgs = image.imgs as File[]
-          const blobArray = imgs.map(img => new Blob([img], { type: img.type }))
+        if(images) {
+          const blobArray = images.map(image => new Blob([image.img], { type: image.img.type }))
           const promises = blobArray.map(async blob => {
             const imagesRef = ref(storage, `photoMessages/${state.chatId}/${createdAt.nanoseconds + user.uid + blob.size}`)
             await uploadBytes(imagesRef, blob)
             await getDownloadURL(imagesRef).then(url => {
               urls.push(url)
-              console.log(url)
             })
           })
           await Promise.all(promises)
         }
       }
       
+
+
       setImages(null)
       setLoadingMessage(null)
+console.log(urls.map((url, i) => {
+  if (!images) return
+  return {
+    url,
+    aspectRatio: images[i].aspectRatio
+  }
+}))
       await updateDoc(doc(firestore, 'chats', state.chatId), {
         messages: arrayUnion({
           uid: user.uid,
@@ -68,10 +73,12 @@ export const ChatContextProvider = ({children}: IChatContextProvider) => {
             audioUrl: val,
             audioDuration
           } : null,
-          imgs: urls.length ? {
-            urls,
-            aspectRatio
-          } : null,
+          imgs: urls.length && images ? urls.map((url, i) => {
+            return {
+              url,
+              aspectRatio: images[i].aspectRatio
+            }
+          }) : null,
           createdAt
         })
       })

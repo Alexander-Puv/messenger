@@ -37,7 +37,7 @@ const MessagesField = ({messages}: {messages: IMsg[]}) => {
               audioUrl: ''
             } : null}
             text={chatContext.loadingMessage.text ?? null}
-            imgs={{urls: null}} // images are loading in DraggedImages (for now)
+            imgs={null} // images are loading in DraggedImages (for now)
             createdAt={chatContext.loadingMessage.createdAt}
             displayName={user.displayName ?? ''}
             photoURL={user.photoURL ?? ''}

@@ -25,25 +25,22 @@ export type LoadingMessage = {
 export type SendMessageProps = {
   text?: SendMessageText,
   audio?: SendMessageAudioData,
-  image?: SendMessageImage
+  images?: SendMessageImage[]
 }
 
-interface SendMessageText {
+export interface SendMessageText {
   value: string,
   setValue: (prop: string) => void,
 }
 
-interface SendMessageAudioData {
+export interface SendMessageAudioData {
   audioBlob: Blob,
   audioDuration: audioDuration,
 }
 
-interface SendMessageImage {
-  imgs: File[],
-  imgProps: {
-    width: number,
-    height: number
-  }
+export interface SendMessageImage {
+  img: File,
+  aspectRatio: number
 }
 
 

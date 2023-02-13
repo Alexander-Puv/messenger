@@ -6,7 +6,7 @@ export interface IMsg {
   photoURL: string,
   text: string | null,
   audioData: audioData | null,
-  imgs: imgsData,
+  imgs: imgData[] | null,
   createdAt: Timestamp,
   isLoading?: boolean
 }
@@ -21,7 +21,7 @@ export interface audioDuration {
   number: number
 }
 
-export interface imgsData {
-  urls: string[] | null,
-  
+export interface imgData {
+  url: string,
+  aspectRatio: number
 }
