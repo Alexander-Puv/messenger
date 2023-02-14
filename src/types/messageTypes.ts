@@ -23,5 +23,8 @@ export interface audioDuration {
 
 export interface imgData {
   url: string,
-  aspectRatio: number
+  imgProps: {
+    width: number,
+    height: number
+  }
 }

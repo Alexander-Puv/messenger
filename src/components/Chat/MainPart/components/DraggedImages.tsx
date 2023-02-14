@@ -47,23 +47,25 @@ const DraggedImages = () => {
     if (!chatContext.images) return // always false
     setIsLoading(true)
     
-    const aspectRatio: number[] = []
+    const heights: number[] = []
+    const widths: number[] = []
     chatContext.images.map(image => {
       const newImage = new Image();
       newImage.src = URL.createObjectURL(image)
       newImage.onload = function() {
-        const thisAspectRatio = newImage.width / newImage.height;
-        aspectRatio.push(thisAspectRatio)
-        console.log(aspectRatio)
+        heights.push(newImage.height)
+        widths.push(newImage.width)
         
         if (!chatContext.images) return // always false
         chatContext.images[chatContext.images.length - 1] === image
           && chatContext.SendMessage({
             images: chatContext.images.map((img, i) => {
-              console.log(aspectRatio[i])
               return {
                 img,
-                aspectRatio: aspectRatio[i]
+                imgProps: {
+                  height: heights[i],
+                  width: widths[i]
+                }
               }
             }),
             text: {value, setValue}

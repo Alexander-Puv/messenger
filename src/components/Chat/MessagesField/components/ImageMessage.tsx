@@ -1,16 +1,21 @@
 import { SxProps, Theme } from '@mui/material'
 import Box from '@mui/material/Box'
-import React, { useLayoutEffect, useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { imgData } from '../../../../types/messageTypes'
 
-const ImageMessage = (imgs: imgData[]) => {
+interface ImageMessageProps {
+  imgs: imgData[],
+  boxRef: React.MutableRefObject<HTMLDivElement | null>
+}
+
+const ImageMessage = ({imgs, boxRef}: ImageMessageProps) => {
   const defImgStyles: SxProps<Theme> = {
     maxWidth: 'calc(100% - 10px)', m: '5px', pointerEvents: 'none'
   }
   const imgStyles: SxProps<Theme> = ({})
   const [boxWidth, setBoxWidth] = useState(0)
   const images = Object.values(imgs)
-  console.log(images);
+  const [loadingImgs, setLoadingImgs] = useState(Array(images.length).fill(false))
 
   useLayoutEffect(() => {
     switch (images.length) {
@@ -28,6 +33,10 @@ const ImageMessage = (imgs: imgData[]) => {
         break;
     }
   }, [])
+
+  useLayoutEffect(() => {
+    boxRef.current?.scrollIntoView({behavior: 'auto'})
+  }, [loadingImgs])
   
   return (
     <Box
@@ -35,8 +44,19 @@ const ImageMessage = (imgs: imgData[]) => {
       display='flex' flexWrap='wrap' justifyContent='center'
       sx={{'img': Object.assign(imgStyles, defImgStyles)}}
     >
-      {images.map(img =>
-        <img src={img.url} key={img.url} />
+      {images.map((img, i) =>
+        <img
+          src={img.url} key={img.url}
+          onLoad={() =>
+            // boxRef.current?.scrollIntoView({behavior: 'auto'})
+            
+            setLoadingImgs(prevLoadingImgs => {
+              const newLoadingImgs = [...prevLoadingImgs];
+              newLoadingImgs[i] = true;
+              return newLoadingImgs;
+            })
+          }
+        />
       )}
     </Box>
   )

@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { blue, blueGrey } from '@mui/material/colors'
-import { useContext, useEffect, useLayoutEffect, useRef } from 'react'
+import { useContext, useState, useLayoutEffect, useRef } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { ImageMessage, VoiceMessage } from '.'
 import { FirebaseContext } from '../../../../MainConf'
@@ -67,7 +67,7 @@ const Message = (msg: IMsg) => {
               {msg.createdAt.toDate().getHours() + ':' + (minutes < 10 ? `0${minutes}` : minutes)}
             </Typography>
           </Box>
-          {msg.imgs && <ImageMessage {...msg.imgs} />}
+          {msg.imgs && <ImageMessage imgs={msg.imgs} boxRef={boxRef} />}
           {msg.text && <Typography>{msg.text}</Typography>}
           {msg.audioData && <VoiceMessage audioData={msg.audioData} isLoading={msg.isLoading} />}
         </Box>

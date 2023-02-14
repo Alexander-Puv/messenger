@@ -55,13 +55,6 @@ export const ChatContextProvider = ({children}: IChatContextProvider) => {
 
       setImages(null)
       setLoadingMessage(null)
-console.log(urls.map((url, i) => {
-  if (!images) return
-  return {
-    url,
-    aspectRatio: images[i].aspectRatio
-  }
-}))
       await updateDoc(doc(firestore, 'chats', state.chatId), {
         messages: arrayUnion({
           uid: user.uid,
@@ -76,7 +69,7 @@ console.log(urls.map((url, i) => {
           imgs: urls.length && images ? urls.map((url, i) => {
             return {
               url,
-              aspectRatio: images[i].aspectRatio
+              imgProps: images[i].imgProps
             }
           }) : null,
           createdAt

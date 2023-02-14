@@ -40,7 +40,10 @@ export interface SendMessageAudioData {
 
 export interface SendMessageImage {
   img: File,
-  aspectRatio: number
+  imgProps: {
+    width: number,
+    height: number
+  }
 }
 
 
