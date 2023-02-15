@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { blue, blueGrey } from '@mui/material/colors'
-import { useContext, useState, useLayoutEffect, useRef } from 'react'
+import { useContext, useEffect, useLayoutEffect, useRef } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { ImageMessage, VoiceMessage } from '.'
 import { FirebaseContext } from '../../../../MainConf'
@@ -17,13 +17,6 @@ const Message = (msg: IMsg) => {
 
   useLayoutEffect(() => {
     boxRef.current?.scrollIntoView({behavior: 'auto'})
-    /* if (msg.imgs) {
-      const newImg = new Image()
-      newImg.src = msg.imgs[msg.imgs.length - 1]
-      newImg.onload = () => {
-        boxRef.current?.scrollIntoView({behavior: 'auto'})
-      }
-    } */
   }, [msg])
 
   return (
@@ -67,7 +60,7 @@ const Message = (msg: IMsg) => {
               {msg.createdAt.toDate().getHours() + ':' + (minutes < 10 ? `0${minutes}` : minutes)}
             </Typography>
           </Box>
-          {msg.imgs && <ImageMessage imgs={msg.imgs} boxRef={boxRef} />}
+          {msg.imgs && <ImageMessage imgs={Object.values(msg.imgs)} />}
           {msg.text && <Typography>{msg.text}</Typography>}
           {msg.audioData && <VoiceMessage audioData={msg.audioData} isLoading={msg.isLoading} />}
         </Box>
