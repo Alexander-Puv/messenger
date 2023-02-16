@@ -20,7 +20,7 @@ const Message = (msg: IMsg) => {
   }, [msg])
 
   return (
-    <Box m={1} ref={boxRef}>
+    <Box m={1}>
       <Grid container sx={user?.uid === msg.uid ? {flexDirection: 'row-reverse'} : {}}>
         <Avatar src={msg.photoURL} />
         {user?.uid === msg.uid ?
@@ -63,6 +63,7 @@ const Message = (msg: IMsg) => {
           {msg.imgs && <ImageMessage imgs={Object.values(msg.imgs)} />}
           {msg.text && <Typography>{msg.text}</Typography>}
           {msg.audioData && <VoiceMessage audioData={msg.audioData} isLoading={msg.isLoading} />}
+          <Box ref={boxRef}></Box>
         </Box>
       </Grid>
     </Box>

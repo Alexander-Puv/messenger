@@ -1,4 +1,4 @@
-import { SxProps, Theme } from '@mui/material'
+import { CircularProgress, SxProps, Theme } from '@mui/material'
 import Box from '@mui/material/Box'
 import { useRef, useLayoutEffect, useState, useEffect } from 'react'
 import { imgData } from '../../../../types/messageTypes'
@@ -13,12 +13,6 @@ const ImageMessage = ({imgs}: ImageMessageProps) => {
   }
   const imgStyles: SxProps<Theme> = ({})
   const [boxWidth, setBoxWidth] = useState(0)
-  const boxRef = useRef<HTMLDivElement | null>(null);
-
-  useLayoutEffect(() => {
-    boxRef.current && boxRef.current.scrollIntoView({behavior: 'auto'})
-  }, [boxRef.current])
-  
 
   useLayoutEffect(() => {
     switch (imgs.length) {
@@ -49,7 +43,6 @@ const ImageMessage = ({imgs}: ImageMessageProps) => {
         newImg.src = img.url
         newImg.onload = () => {
           setIsLoaded(true)
-          // boxRef.current?.scrollIntoView({behavior: 'auto'})
         }
 
         const aspectRatio = img.imgProps.width / img.imgProps.height;
@@ -58,31 +51,15 @@ const ImageMessage = ({imgs}: ImageMessageProps) => {
 
         return (
           <Box
-            width={containerWidth}
-            height={containerHeight}
-            key={img.url}
-            ref={boxRef}
+            width={containerWidth} height={containerHeight}
+            display='flex' key={img.url}
           >
-            {!isLoaded &&
-              <Box
-                sx={{...Object.assign(imgStyles, defImgStyles)}}
-              />
-            //: <img src={newImg.src} key={img.url} />
+            {!isLoaded ?
+              <CircularProgress sx={{m: 'auto'}} />
+            : <img src={newImg.src} key={img.url} />
             }
           </Box>
         )
-        // <img
-        //   src={img.url} key={img.url}
-        //   onLoad={() =>
-        //     // boxRef.current?.scrollIntoView({behavior: 'auto'})
-            
-        //     setLoadingImgs(prevLoadingImgs => {
-        //       const newLoadingImgs = [...prevLoadingImgs];
-        //       newLoadingImgs[i] = true;
-        //       return newLoadingImgs;
-        //     })
-        //   }
-        // />
       })}
     </Box>
   )
