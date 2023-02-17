@@ -20,7 +20,7 @@ const Message = (msg: IMsg) => {
   }, [msg])
 
   return (
-    <Box m={1}>
+    <Box m={1} ref={boxRef}>
       <Grid container sx={user?.uid === msg.uid ? {flexDirection: 'row-reverse'} : {}}>
         <Avatar src={msg.photoURL} />
         {user?.uid === msg.uid ?
@@ -60,10 +60,9 @@ const Message = (msg: IMsg) => {
               {msg.createdAt.toDate().getHours() + ':' + (minutes < 10 ? `0${minutes}` : minutes)}
             </Typography>
           </Box>
-          {msg.imgs && <ImageMessage imgs={Object.values(msg.imgs)} />}
+          {msg.imgs && <ImageMessage imgs={Object.values(msg.imgs)} boxRef={boxRef} />}
           {msg.text && <Typography>{msg.text}</Typography>}
           {msg.audioData && <VoiceMessage audioData={msg.audioData} isLoading={msg.isLoading} />}
-          <Box ref={boxRef}></Box>
         </Box>
       </Grid>
     </Box>

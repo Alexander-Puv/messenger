@@ -5,9 +5,10 @@ import { imgData } from '../../../../types/messageTypes'
 
 interface ImageMessageProps {
   imgs: imgData[],
+  boxRef: React.MutableRefObject<HTMLDivElement | null>
 }
 
-const ImageMessage = ({imgs}: ImageMessageProps) => {
+const ImageMessage = ({imgs, boxRef}: ImageMessageProps) => {
   const defImgStyles: SxProps<Theme> = {
     maxWidth: '100%', pointerEvents: 'none'
   }
@@ -43,6 +44,7 @@ const ImageMessage = ({imgs}: ImageMessageProps) => {
         newImg.src = img.url
         newImg.onload = () => {
           setIsLoaded(true)
+          boxRef.current?.scrollIntoView({behavior: 'auto'})
         }
 
         const aspectRatio = img.imgProps.width / img.imgProps.height;

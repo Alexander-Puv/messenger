@@ -1,32 +1,60 @@
 import Box from '@mui/material/Box';
-import { Timestamp, doc, onSnapshot } from 'firebase/firestore';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../../../MainConf';
 import { ChatContext } from '../../../reducer/ChatReducer/ChatContext';
 import { IMsg } from '../../../types/messageTypes';
-import { ChatDate, ChatStart, Message } from './components';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { getMessageDate } from '../../../utils/getDate';
+import { ChatDate, ChatStart, Message } from './components';
 
 const MessagesField = ({messages}: {messages: IMsg[]}) => {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const chatContext = useContext(ChatContext)
+  const [newMessages, setNewMessages] = useState([...messages])
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setNewMessages([...messages])
+  }, [messages])
+
+  // useEffect(() => {
+  //   const reverseChat = async () => {
+  //     if (!chatContext) return
+  //     const docRef = doc(firestore, "chats", chatContext.state.chatId);
+  //     const docSnap = await getDoc(docRef);
+  //     if (docSnap.exists()) {
+  //       console.log(true);
+        
+  //       // Reverse the order of the messages array
+  //       const messages = docSnap.data().messages;
+  //       messages.reverse();
+    
+  //       // Update the document with the reversed array of messages
+  //       updateDoc(docRef, { messages: messages });
+        
+  //       console.log(true);
+  //     } else {
+  //       console.log(docSnap);
+  //     }
+  //   }
+  //   chatContext?.state.chatId && reverseChat()
+  // }, [chatContext?.state.chatId])
 
   return <>
     <Box sx={{overflowY: 'auto', userSelect: 'initial'}} width='100%' position='absolute' top={0} bottom='56px'>
       <Box height='100%' display='flex' flexDirection='column'>
         <ChatStart />
-        {messages.map((msg, index) =>
+        {newMessages.reverse().map((msg, index) =>
           <React.Fragment key={msg.createdAt.nanoseconds}>
             {
-              messages[index - 1] ? // if this is not the first message
+              newMessages[index - 1] ? // if this is not the first message
                 // if this msg created date is not equal to last msg created date
-                getMessageDate(messages[index - 1].createdAt.toDate()) !== getMessageDate(msg.createdAt.toDate()) &&
-                <ChatDate date={getMessageDate(msg.createdAt.toDate())} />
+                getMessageDate(newMessages[index - 1].createdAt.toDate()) !== getMessageDate(msg.createdAt.toDate())
+                  && <ChatDate date={getMessageDate(msg.createdAt.toDate())} />
               : // if this is the first message
                 <ChatDate date={getMessageDate(msg.createdAt.toDate())} />
-            } 
+            }
             <Message {...msg} />
           </React.Fragment>
         )}
