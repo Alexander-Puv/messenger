@@ -6,13 +6,13 @@ import { ChatContext } from '../../../reducer/ChatReducer/ChatContext';
 import { IMsg } from '../../../types/messageTypes';
 import { getMessageDate } from '../../../utils/getDate';
 import { ChatDate, ChatStart, Message } from './components';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const MessagesField = ({messages}: {messages: IMsg[]}) => {
-  const {auth} = useContext(FirebaseContext)
+  const {auth, firestore} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const chatContext = useContext(ChatContext)
   const [newMessages, setNewMessages] = useState([...messages])
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setNewMessages([...messages])
@@ -45,7 +45,7 @@ const MessagesField = ({messages}: {messages: IMsg[]}) => {
     <Box sx={{overflowY: 'auto', userSelect: 'initial'}} width='100%' position='absolute' top={0} bottom='56px'>
       <Box height='100%' display='flex' flexDirection='column'>
         <ChatStart />
-        {newMessages.reverse().map((msg, index) =>
+        {newMessages.map((msg, index) =>
           <React.Fragment key={msg.createdAt.nanoseconds}>
             {
               newMessages[index - 1] ? // if this is not the first message

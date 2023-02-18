@@ -1,12 +1,10 @@
-import React, { createContext, useContext, useReducer, useState } from 'react'
-import { ChatContextProps, IChatContextProvider, LoadingMessage, SendMessageProps } from './types/ChatContextTypes'
-import { ChatReducer, initial_state } from './ChatReducer'
-import { audioDuration } from '../../types/messageTypes'
-import { FirebaseContext } from '../../MainConf'
+import { Timestamp, arrayUnion, doc, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { getDownloadURL, ref, uploadBytes, uploadBytesResumable } from 'firebase/storage'
+import { createContext, useContext, useReducer, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { DocumentData, Timestamp, arrayUnion, doc, getDoc, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore';
-import { getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
-import { IMsg } from '../../types/messageTypes'
+import { FirebaseContext } from '../../MainConf'
+import { ChatReducer, initial_state } from './ChatReducer'
+import { ChatContextProps, IChatContextProvider, LoadingMessage, SendMessageProps } from './types/ChatContextTypes'
 
 export const ChatContext = createContext<ChatContextProps | null>(null)
 
@@ -40,10 +38,9 @@ export const ChatContextProvider = ({children}: IChatContextProvider) => {
         text.setValue('')
 
         if(images) {
-          const blobArray = images.map(image => new Blob([image.img], { type: image.img.type }))
-          const promises = blobArray.map(async blob => {
-            const imagesRef = ref(storage, `photoMessages/${state.chatId}/${createdAt.nanoseconds + user.uid + blob.size}`)
-            await uploadBytes(imagesRef, blob)
+          const promises = images.map(async img => {
+            const imagesRef = ref(storage, `photoMessages/${state.chatId}/${createdAt.nanoseconds + user.uid + img.img.size}`)
+            await uploadBytesResumable(imagesRef, img.img)
             await getDownloadURL(imagesRef).then(url => {
               urls.push(url)
             })
@@ -56,29 +53,26 @@ export const ChatContextProvider = ({children}: IChatContextProvider) => {
 
       setImages(null)
       setLoadingMessage(null)
-
-      // add message to the top
-      const chatRef = doc(firestore, 'chats', state.chatId)
-      const messages: IMsg[] = (await getDoc(chatRef)).data().messages // no problem here, stupid TS
-      messages.unshift({
-        uid: user.uid,
-        displayName: user.displayName ?? '', // it can't be null
-        photoURL: user.photoURL,
-        // if there is audioDuration, val is url, otherwise val is text
-        text: audioDuration ? null : (val ?? null), // it can't be undefined
-        audioData: audioDuration ? {
-          audioUrl: (val ?? ''), // it can't be undefined
-          audioDuration
-        } : null,
-        imgs: urls.length && images ? urls.map((url, i) => {
-          return {
-            url,
-            imgProps: images[i].imgProps
-          }
-        }) : null,
-        createdAt
+      await updateDoc(doc(firestore, 'chats', state.chatId), {
+        messages: arrayUnion({
+          uid: user.uid,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          // if there is audioDuration, val is url, otherwise val is text
+          text: audioDuration ? null : val,
+          audioData: audioDuration ? {
+            audioUrl: val,
+            audioDuration
+          } : null,
+          imgs: urls.length && images ? urls.map((url, i) => {
+            return {
+              url,
+              imgProps: images[i].imgProps
+            }
+          }) : null,
+          createdAt
+        })
       })
-      await updateDoc(chatRef, {messages})
 
       const lastMessage = {
         value: audioDuration ? null : val,
