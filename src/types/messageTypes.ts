@@ -3,7 +3,7 @@ import { Timestamp } from "firebase/firestore"
 export interface IMsg {
   uid: string,
   displayName: string,
-  photoURL: string,
+  photoURL: string | null,
   text: string | null,
   audioData: audioData | null,
   imgs: imgData[] | null,

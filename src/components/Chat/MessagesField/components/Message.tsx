@@ -22,7 +22,7 @@ const Message = (msg: IMsg) => {
   return (
     <Box m={1} ref={boxRef}>
       <Grid container sx={user?.uid === msg.uid ? {flexDirection: 'row-reverse'} : {}}>
-        <Avatar src={msg.photoURL} />
+        <Avatar src={msg.photoURL ?? undefined} />
         {user?.uid === msg.uid ?
           <Box sx={{transform: 'translateX(-1px)', marginRight: '-1px'}}>
             <svg viewBox="0 0 8 13" width="8" height="13">
