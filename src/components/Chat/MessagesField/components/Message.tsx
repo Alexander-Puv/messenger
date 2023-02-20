@@ -38,7 +38,6 @@ const Message = (msg: IMsg) => {
           </Box>
         }
         <Box
-          position='relative'
           display='flex' flexDirection='column'
           alignItems={isCurrentUser ? 'flex-end' : 'flex-start'}
           gap={.5} p='4px 8px'
@@ -61,7 +60,7 @@ const Message = (msg: IMsg) => {
               {msg.createdAt.toDate().getHours() + ':' + (minutes < 10 ? `0${minutes}` : minutes)}
             </Typography>
           </Box>
-          {msg.imgs && <ImageMessage imgs={Object.values(msg.imgs)} />}
+          {msg.imgs && <ImageMessage  {Object.values(msg.imgs)} />}
           {msg.text && <Typography>{msg.text}</Typography>}
           {msg.audioData && <VoiceMessage audioData={msg.audioData} isLoading={msg.isLoading} />}
         </Box>
