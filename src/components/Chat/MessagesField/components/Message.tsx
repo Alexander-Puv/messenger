@@ -60,7 +60,7 @@ const Message = (msg: IMsg) => {
               {msg.createdAt.toDate().getHours() + ':' + (minutes < 10 ? `0${minutes}` : minutes)}
             </Typography>
           </Box>
-          {msg.imgs && <ImageMessage  {Object.values(msg.imgs)} />}
+          {msg.imgs && <ImageMessage  imgs={Object.values(msg.imgs)} />}
           {msg.text && <Typography>{msg.text}</Typography>}
           {msg.audioData && <VoiceMessage audioData={msg.audioData} isLoading={msg.isLoading} />}
         </Box>

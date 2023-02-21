@@ -65,35 +65,35 @@ const ImageMessage = ({imgs}: {imgs: imgData[]}) => {
               position='fixed'
               top={0} bottom={0}
               left={0} right={0}
-              display='flex'
+              display='flex' p='10%'
               sx={{
                 backgroundColor: 'rgb(0 0 0 / 50%)',
                 transform: `translateX(${thisImgOpen ? 0 : '100%'})`,
                 transition: `${theme.transitions.duration.shortest}ms ease-out`,
                 zIndex: 1000,
-                'img': {
-                  maxWidth: '80%',
-                  maxHeight: '80%',
-                  m: 'auto'
-                }
               }}
             >
               {thisImgOpen && <>
-                <img src={openImg}/>
+                <Box
+                  maxWidth='80%' maxHeight='80%'
+                  display='flex' flex={1}
+                  sx={{
+                    backgroundImage: `url(${openImg}) no-repeat center`,
+                    backgroundSize: 'contain'
+                  }}
+                />
+                <Box
+                  position='absolute'
+                  top={0} bottom={0}
+                  left={0} right={0}
+                  sx={{backgroundColor: 'rgb(0 0 0 / 50%)', zIndex: -1}}
+                  onMouseUp={(e) => e.button === 0 && setOpenImg(null)}
+                />
               </>}
             </Box>
           </Box>
         )
       })}
-      {openImg &&
-        <Box
-          position='fixed'
-          top={0} bottom={0}
-          left={0} right={0}
-          sx={{backgroundColor: 'rgb(0 0 0 / 50%)', zIndex: 1000000}}
-          onClick={() => setOpenImg(null)}
-        />
-      }
     </Box>
   )
 }
