@@ -90,16 +90,6 @@ const ImageMessage = ({imgs}: {imgs: imgData[]}) => {
                 >
                   <img src={openImg} />
                 </Box>
-                {/* <Box
-                  position='absolute'
-                  top={0} bottom={0}
-                  left={0} right={0}
-                  sx={{backgroundColor: 'rgb(0 0 0 / 50%)', zIndex: -1}}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpenImg(null);
-                  }}
-                /> */}
               </>}
             </Box>
           </Box>
