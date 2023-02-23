@@ -1,8 +1,9 @@
-import { CircularProgress, SxProps, Theme } from '@mui/material'
+import { CircularProgress, IconButton, SxProps, Theme } from '@mui/material'
 import Box from '@mui/material/Box'
 import { useRef, useLayoutEffect, useState, useEffect } from 'react'
 import { imgData } from '../../../../types/messageTypes'
 import useTheme from '@mui/material/styles/useTheme';
+import CloseIcon from '@mui/icons-material/Close';
 
 const ImageMessage = ({imgs}: {imgs: imgData[]}) => {
   const [openImg, setOpenImg] = useState<string | null>(null)
@@ -90,6 +91,12 @@ const ImageMessage = ({imgs}: {imgs: imgData[]}) => {
                 >
                   <img src={openImg} />
                 </Box>
+                <IconButton
+                  sx={{position: 'absolute', top: 15, right: 25}}
+                  onClick={() => setOpenImg(null)}
+                >
+                  <CloseIcon sx={{width: 30, height: 30}} />
+                </IconButton>
               </>}
             </Box>
           </Box>
