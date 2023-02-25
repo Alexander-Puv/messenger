@@ -1,7 +1,7 @@
 import { Avatar, CircularProgress, IconButton, ListItem, Tooltip } from '@mui/material'
 import { FirebaseError } from 'firebase/app'
 import { updateProfile } from 'firebase/auth'
-import { doc, updateDoc } from 'firebase/firestore'
+import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -9,6 +9,7 @@ import { FirebaseContext } from '../../../../../../MainConf'
 import { useFirebaseDoc } from '../../../../../../hooks/useFirebaseDoc'
 import { greenColor } from '../../../../../../utils/colors'
 import Popup, { PopupContext } from '../../../Popup'
+import {IMsg} from '../../../../../../types/messageTypes'
 
 const Photo = () => {
   const {auth, storage, firestore} = useContext(FirebaseContext)
@@ -39,6 +40,15 @@ const Photo = () => {
 
   const changePhoto = async (url: string) => {
     try {
+      // getDoc && getDoc('users', 'uid', user.uid, async (d) => {
+      //   await updateDoc(doc(firestore, 'users', d.id), {
+      //     photoURL: url
+      //   })
+      // })
+
+      // await updateProfile(user, {photoURL: url})
+
+      // Update the photoURL field in the users collection
       getDoc && getDoc('users', 'uid', user.uid, async (d) => {
         await updateDoc(doc(firestore, 'users', d.id), {
           photoURL: url
@@ -46,9 +56,69 @@ const Photo = () => {
       })
 
       await updateProfile(user, {photoURL: url})
-      setSuccessMessage('Your username successfully changed')
+
+      // Update userChats collection
+      const userChatsQuery = query(
+        collection(firestore, 'userChats'),
+        where('userInfo.uid', '==', user.uid)
+      )
+      const userChatsSnapshot = await getDocs(userChatsQuery)
+
+      userChatsSnapshot.forEach(async (d) => {
+        console.log('why');
+        const chatId = d.id
+        const userInfoField = `userInfo.${user.uid}`
+        const chatData = d.data()
+        console.log(d.data());
+
+        if (chatData.userInfo && chatData.userInfo[user.uid]) {
+          await updateDoc(doc(firestore, 'userChats', chatId), {
+            [`${userInfoField}.photoURL`]: url
+          })
+        }
+      })
+      console.log(userChatsSnapshot);
+      console.log(userChatsQuery);
+
+      // Update chats collection
+      if (!userChatsSnapshot.empty) {
+        const chatsQuery = query(
+          collection(firestore, 'chats'),
+          where('id', 'in', userChatsSnapshot.docs.map(d => d.id))
+        )
+        const chatsSnapshot = await getDocs(chatsQuery)
+
+        chatsSnapshot.forEach(async (d) => {
+          const chatId = d.id
+          const messagesField = 'messages'
+
+          const chatData = d.data()
+
+          if (chatData.messages) {
+            const updatedMessages = chatData.messages.map((message: IMsg) => {
+              if (message.uid === user.uid) {
+                return {
+                  ...message,
+                  photoURL: url
+                }
+              } else {
+                return message
+              }
+            })
+
+            await updateDoc(doc(firestore, 'chats', chatId), {
+              [messagesField]: updatedMessages
+            })
+          }
+        })
+      }
+
+      setSuccessMessage('Your photo successfully changed')
     } catch (e) {
-      e instanceof FirebaseError && setErrorMessage(e.message)
+      if (e instanceof FirebaseError) {
+        console.log(e.message)
+        setErrorMessage(e.message)
+      }
     }
     setIsLoading(false)
   }
