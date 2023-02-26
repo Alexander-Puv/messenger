@@ -10,6 +10,7 @@ import { useFirebaseDoc } from '../../../../../../hooks/useFirebaseDoc'
 import { greenColor } from '../../../../../../utils/colors'
 import Popup, { PopupContext } from '../../../Popup'
 import {IMsg} from '../../../../../../types/messageTypes'
+import {ISidebarChat} from '../../../../../../types/sidebaarChatTypes'
 
 const Photo = () => {
   const {auth, storage, firestore} = useContext(FirebaseContext)
@@ -40,15 +41,7 @@ const Photo = () => {
 
   const changePhoto = async (url: string) => {
     try {
-      // getDoc && getDoc('users', 'uid', user.uid, async (d) => {
-      //   await updateDoc(doc(firestore, 'users', d.id), {
-      //     photoURL: url
-      //   })
-      // })
-
-      // await updateProfile(user, {photoURL: url})
-
-      // Update the photoURL field in the users collection
+      // Update users collection
       getDoc && getDoc('users', 'uid', user.uid, async (d) => {
         await updateDoc(doc(firestore, 'users', d.id), {
           photoURL: url
@@ -58,40 +51,34 @@ const Photo = () => {
       await updateProfile(user, {photoURL: url})
 
       // Update userChats collection
-      const userChatsQuery = query(
-        collection(firestore, 'userChats'),
-        where('userInfo.uid', '==', user.uid)
-      )
+      const userChatsQuery = query(collection(firestore, 'userChats'))
       const userChatsSnapshot = await getDocs(userChatsQuery)
 
       userChatsSnapshot.forEach(async (d) => {
-        console.log('why');
-        const chatId = d.id
-        const userInfoField = `userInfo.${user.uid}`
-        const chatData = d.data()
-        console.log(d.data());
+        const chatId = user.uid > d.id ? user.uid + d.id : d.id + user.uid
+        const chatData = Object.values(d.data())
+        console.log(chatId);
 
-        if (chatData.userInfo && chatData.userInfo[user.uid]) {
-          await updateDoc(doc(firestore, 'userChats', chatId), {
-            [`${userInfoField}.photoURL`]: url
-          })
-        }
+        chatData.map(async (thisChatData: ISidebarChat) => {
+          if (thisChatData.userInfo.uid === user.uid) {
+            await updateDoc(doc(firestore, 'userChats', d.id), {
+              [`${chatId}.userInfo.photoURL`]: url
+            })
+          }
+        })
       })
-      console.log(userChatsSnapshot);
-      console.log(userChatsQuery);
 
       // Update chats collection
       if (!userChatsSnapshot.empty) {
         const chatsQuery = query(
           collection(firestore, 'chats'),
-          where('id', 'in', userChatsSnapshot.docs.map(d => d.id))
+          where('uid', 'in', userChatsSnapshot.docs.map(d => d.id))
         )
         const chatsSnapshot = await getDocs(chatsQuery)
 
         chatsSnapshot.forEach(async (d) => {
           const chatId = d.id
           const messagesField = 'messages'
-
           const chatData = d.data()
 
           if (chatData.messages) {

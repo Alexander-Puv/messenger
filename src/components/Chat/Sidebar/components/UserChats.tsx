@@ -33,10 +33,8 @@ const UserChats = () => {
       <Box display='flex' alignItems='center'>
         <CircularProgress sx={{m: 'auto'}} />
       </Box>
-    : chats && Object.entries(chats).sort((a, b) => b[1].date - a[1].date).map((chat: [string, ISidebarChat]) => 
+    : chats && Object.entries(chats).sort((a, b) => b[1].date - a[1].date).map((chat: [string, ISidebarChat]) =>
       <ChatCard
-        // displayName={chat[1].userInfo.displayName}
-        // photoURL={chat[1].userInfo.photoURL ?? ''}
         date={chat[1].date}
         lastMessage={chat[1].lastMessage ?? null}
         anotherUser={chat[1].userInfo}
