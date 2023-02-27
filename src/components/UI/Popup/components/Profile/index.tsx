@@ -10,31 +10,35 @@ import { FirebaseContext } from '../../../../../MainConf';
 import { useFirebaseDoc } from '../../../../../hooks/useFirebaseDoc';
 import { PopupContext } from '../../Popup';
 import { EmailNPassword, Photo } from './components';
+import useUpdateChats from '../../../../../hooks/useUpdateChats';
 
 const ProfileContent = () => {
   const {auth, firestore} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const {setErrorMessage, setSuccessMessage} = useContext(PopupContext)
-  const [getDoc, _, error] = useFirebaseDoc()
+  const [getDoc, _, getDocError] = useFirebaseDoc()
+  if (!user) return <></>
+  const [updateChats, __, updateError] = useUpdateChats(user)
 
   useEffect(() => {
-    error && setErrorMessage(error)
-  }, [error])
-
-  if (!user) return <></>
+    getDocError && setErrorMessage(getDocError)
+    updateError && setErrorMessage(updateError)
+  }, [getDocError, updateError])
 
   const [displayName, setDisplayName] = useState('')
 
   const applyDisplayName = async () => {
-    try {
-      getDoc && getDoc('users', 'uid', user.uid, async (d) => {
-        await updateDoc(doc(firestore, 'users', d.id), {displayName})
-      })
-      await updateProfile(user, {displayName})
-      setSuccessMessage('Your username successfully changed')
-    } catch (e) {
-      e instanceof FirebaseError && setErrorMessage(e.message)
-    }
+    // Update users collection
+    getDoc && getDoc('users', 'uid', user.uid, async (d) => {
+      await updateDoc(doc(firestore, 'users', d.id), {displayName})
+    })
+
+    await updateProfile(user, {displayName})
+
+    // Update userChats and chats collection
+    await updateChats('displayName', displayName)
+
+    setSuccessMessage('Your username successfully changed')
   }
   const cancelDisplayName = () => {
     setDisplayName('')
