@@ -57,7 +57,6 @@ const Photo = () => {
       userChatsSnapshot.forEach(async (d) => {
         const chatId = user.uid > d.id ? user.uid + d.id : d.id + user.uid
         const chatData = Object.values(d.data())
-        console.log(chatId);
 
         chatData.map(async (thisChatData: ISidebarChat) => {
           if (thisChatData.userInfo.uid === user.uid) {
@@ -70,17 +69,15 @@ const Photo = () => {
 
       // Update chats collection
       if (!userChatsSnapshot.empty) {
-        const chatsQuery = query(
-          collection(firestore, 'chats'),
-          where('uid', 'in', userChatsSnapshot.docs.map(d => d.id))
-        )
+        const chatsQuery = query(collection(firestore, 'chats'))
         const chatsSnapshot = await getDocs(chatsQuery)
+        console.log(chatsSnapshot)
 
         chatsSnapshot.forEach(async (d) => {
           const chatId = d.id
-          const messagesField = 'messages'
           const chatData = d.data()
-
+          if (!chatId.includes(user.uid)) return
+          
           if (chatData.messages) {
             const updatedMessages = chatData.messages.map((message: IMsg) => {
               if (message.uid === user.uid) {
@@ -94,7 +91,7 @@ const Photo = () => {
             })
 
             await updateDoc(doc(firestore, 'chats', chatId), {
-              [messagesField]: updatedMessages
+              ['messages']: updatedMessages
             })
           }
         })
