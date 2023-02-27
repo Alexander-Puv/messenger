@@ -11,6 +11,7 @@ import { greenColor } from '../../../../../../utils/colors'
 import Popup, { PopupContext } from '../../../Popup'
 import {IMsg} from '../../../../../../types/messageTypes'
 import {ISidebarChat} from '../../../../../../types/sidebaarChatTypes'
+import useUpdateChats from '../../../../../../hooks/useUpdateChats'
 
 const Photo = () => {
   const {auth, storage, firestore} = useContext(FirebaseContext)
@@ -19,13 +20,14 @@ const Photo = () => {
   const [isLoading, setIsLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null);
   const {setErrorMessage, setSuccessMessage} = useContext(PopupContext)
-  const [getDoc, _, error] = useFirebaseDoc()
-
+  const [getDoc, _, GetDocError] = useFirebaseDoc()
   if (!user) return <></>
+  const [UpdateChats, __, UpdateError] = useUpdateChats(user)
 
   useEffect(() => {
-    error && setErrorMessage(error)
-  }, [error])
+    GetDocError && setErrorMessage(GetDocError)
+    UpdateError && setErrorMessage(UpdateError)
+  }, [GetDocError, UpdateError])
 
   const uploadPhoto = async () => {
     if (!photo) return
@@ -50,52 +52,7 @@ const Photo = () => {
 
       await updateProfile(user, {photoURL: url})
 
-      // Update userChats collection
-      const userChatsQuery = query(collection(firestore, 'userChats'))
-      const userChatsSnapshot = await getDocs(userChatsQuery)
-
-      userChatsSnapshot.forEach(async (d) => {
-        const chatId = user.uid > d.id ? user.uid + d.id : d.id + user.uid
-        const chatData = Object.values(d.data())
-
-        chatData.map(async (thisChatData: ISidebarChat) => {
-          if (thisChatData.userInfo.uid === user.uid) {
-            await updateDoc(doc(firestore, 'userChats', d.id), {
-              [`${chatId}.userInfo.photoURL`]: url
-            })
-          }
-        })
-      })
-
-      // Update chats collection
-      if (!userChatsSnapshot.empty) {
-        const chatsQuery = query(collection(firestore, 'chats'))
-        const chatsSnapshot = await getDocs(chatsQuery)
-        console.log(chatsSnapshot)
-
-        chatsSnapshot.forEach(async (d) => {
-          const chatId = d.id
-          const chatData = d.data()
-          if (!chatId.includes(user.uid)) return
-          
-          if (chatData.messages) {
-            const updatedMessages = chatData.messages.map((message: IMsg) => {
-              if (message.uid === user.uid) {
-                return {
-                  ...message,
-                  photoURL: url
-                }
-              } else {
-                return message
-              }
-            })
-
-            await updateDoc(doc(firestore, 'chats', chatId), {
-              ['messages']: updatedMessages
-            })
-          }
-        })
-      }
+      await UpdateChats('photoURL', url)
 
       setSuccessMessage('Your photo successfully changed')
     } catch (e) {

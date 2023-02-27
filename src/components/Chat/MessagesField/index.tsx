@@ -4,7 +4,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../../../MainConf';
 import { ChatContext } from '../../../reducer/ChatReducer/ChatContext';
 import { IMsg } from '../../../types/messageTypes';
-import { getMessageDate } from '../../../utils/getDate';
+import { getMessageDate } from '../../../functions/getDate';
 import { ChatDate, ChatStart, Message } from './components';
 
 const MessagesField = ({messages}: {messages: IMsg[]}) => {

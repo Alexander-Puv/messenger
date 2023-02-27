@@ -2,7 +2,7 @@ import { FirebaseError } from "firebase/app";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useContext, useState } from "react";
 import { FirebaseContext } from "../MainConf";
-import { Error, GetDoc, useFirebaseDocReturn } from "../types/useFirebaseDocTypes";
+import { GetDocError, GetDoc, useFirebaseDocReturn } from "../types/useFirebaseDocTypes";
 
 /**
  * @returns getDoc function, isLoading state and error if it occures
@@ -10,7 +10,7 @@ import { Error, GetDoc, useFirebaseDocReturn } from "../types/useFirebaseDocType
 export const useFirebaseDoc = (): useFirebaseDocReturn => {
   const {firestore} = useContext(FirebaseContext)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<Error>(null)
+  const [error, setError] = useState<GetDocError>(null)
 
   /** 
    * This funcion gets document and pass it to functions (func param)

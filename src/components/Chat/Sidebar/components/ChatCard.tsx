@@ -8,7 +8,7 @@ import { FirebaseContext } from '../../../../MainConf'
 import { ChatContext } from '../../../../reducer/ChatReducer/ChatContext'
 import { ChatActionTypes } from '../../../../reducer/ChatReducer/types/ChatReducerTypes'
 import { ILastMessage, IUserInfo } from '../../../../types/sidebaarChatTypes'
-import { getSidebarDate } from '../../../../utils/getDate'
+import { getSidebarDate } from '../../../../functions/getDate'
 
 interface ChatCardProps {
   date?: Timestamp,
