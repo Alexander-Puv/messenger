@@ -51,16 +51,6 @@ const ChatCard = (props: ChatCardProps) => {
         title={props.anotherUser.displayName}
         subheader={
           <Box>
-            {/* {props.lastMessage ? // if there is last message
-              props.lastMessage.value ?? // check is there text
-              <Box display='flex' alignItems='flex-end'>
-                <KeyboardVoiceIcon fontSize='small' />
-                <Typography fontSize='inherit' lineHeight='1'>
-                  {props.lastMessage.audioData?.audioDuration.string}
-                </Typography>
-              </Box> // otherwise audio
-            : 'No comments' // if no messages - no comments
-            } */}
             {props.lastMessage ? // if there is last message
               props.lastMessage.audioData ? // check is there audio
                 <Box display='flex' alignItems='flex-end' gap={0.5}>
