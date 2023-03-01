@@ -63,12 +63,11 @@ const ChatCard = (props: ChatCardProps) => {
                 <Box
                   display='flex' alignItems='center'
                   height={20} gap={0.5}
-                  sx={{'img': {maxWidth: 40}}}
+                  sx={{'img': {maxHeight: 20, maxWidth: 40}}}
                 >
                   <img src={props.lastMessage.img} />
                   <Typography fontSize='inherit' lineHeight='1'>
-                    dasdasdasdasd
-                    {/* {props.lastMessage.value} */}
+                    {props.lastMessage.value}
                   </Typography>
                 </Box>
               : props.lastMessage.value // otherwise just text
