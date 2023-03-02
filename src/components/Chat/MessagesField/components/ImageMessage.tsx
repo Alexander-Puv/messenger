@@ -4,7 +4,8 @@ import React, { useRef, useLayoutEffect, useState, useEffect } from 'react'
 import { imgData } from '../../../../types/messageTypes'
 import useTheme from '@mui/material/styles/useTheme';
 import CloseIcon from '@mui/icons-material/Close';
-import { backgroundImage } from '../../../../utils/colors';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const ImageMessage = ({imgs}: {imgs: imgData[]}) => {
   const [openImg, setOpenImg] = useState<string | null>(null)
@@ -14,6 +15,18 @@ const ImageMessage = ({imgs}: {imgs: imgData[]}) => {
   : imgs.length === 3 ? {width: 430}
   : imgs.length === 4 ? {width: 540}
   : {width: 540}
+
+  const scrollLeft = () => {
+    const img = imgs.findIndex(el => el.url === openImg)
+    if (img === 0) return
+    setOpenImg(imgs[img - 1].url)
+  }
+
+  const scrollRight = () => {
+    const img = imgs.findIndex(el => el.url === openImg)
+    if (img === imgs.length - 1) return
+    setOpenImg(imgs[img + 1].url)
+  }
 
   return (
     <Box
@@ -95,8 +108,8 @@ const ImageMessage = ({imgs}: {imgs: imgData[]}) => {
             height='100%' width='100%'
             display='flex' flexDirection='column'
             justifyContent='space-between'
-            sx={{backgroundColor: 'rgb(0 0 0 / 50%)'}}
           >
+            {/* Open image */}
             <Box
               display='flex' flex={1} mb={2.5}
               sx={{
@@ -104,6 +117,7 @@ const ImageMessage = ({imgs}: {imgs: imgData[]}) => {
                 backgroundSize: 'contain'
               }}
             />
+            {/* All images */}
             <Box display='flex' sx={{overflowX: 'auto'}}>
               <Box display='flex' m='0 auto' gap='5px'>
                 {imgs.map(img =>
@@ -124,6 +138,42 @@ const ImageMessage = ({imgs}: {imgs: imgData[]}) => {
                 )}
               </Box>
             </Box>
+            {/* Scroll buttons */}
+            <Box
+              position='absolute'
+              top={0} bottom={0}
+              left={0}
+              width={70}
+              display='flex' alignItems='center'
+              justifyContent='center'
+              sx={{
+                background: 'linear-gradient(270deg, transparent, rgb(0 0 0))',
+                cursor: 'pointer',
+                opacity: openImg === imgs[0].url ? 0 : 1,
+                transition: `${theme.transitions.duration.shorter}ms ease`
+              }}
+              onClick={scrollLeft}
+            >
+              <ChevronLeftIcon sx={{width: '70%', height: 'auto'}} />
+            </Box>
+            <Box
+              position='absolute'
+              top={0} bottom={0}
+              right={0}
+              width={70}
+              display='flex' alignItems='center'
+              justifyContent='center'
+              sx={{
+                background: 'linear-gradient(90deg, transparent, rgb(0 0 0))',
+                cursor: 'pointer',
+                opacity: openImg === imgs[imgs.length - 1].url ? 0 : 1,
+                transition: `${theme.transitions.duration.shorter}ms ease`
+              }}
+              onClick={scrollRight}
+            >
+              <ChevronRightIcon sx={{width: '70%', height: 'auto'}} />
+            </Box>
+            {/* Close button */}
             <IconButton
               sx={{position: 'absolute', top: 15, right: 25}}
               onClick={() => setOpenImg(null)}
