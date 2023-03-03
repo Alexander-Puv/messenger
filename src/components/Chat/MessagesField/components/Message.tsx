@@ -22,7 +22,7 @@ const Message = (msg: IMsg) => {
 
   return (
     <Box m={1} ref={boxRef}>
-      <Grid container sx={isCurrentUser ? {flexDirection: 'row-reverse'} : {}}>
+      <Grid container sx={isCurrentUser ? {flexDirection: 'row-reverse'} : {}} flexWrap='nowrap'>
         <Avatar src={msg.photoURL ?? undefined} />
         {isCurrentUser ?
           <Box sx={{transform: 'translateX(-1px)', marginRight: '-1px'}}>
@@ -38,6 +38,7 @@ const Message = (msg: IMsg) => {
           </Box>
         }
         <Box
+          maxWidth='80%'
           display='flex' flexDirection='column'
           alignItems={isCurrentUser ? 'flex-end' : 'flex-start'}
           gap={.5} p='4px 8px'
