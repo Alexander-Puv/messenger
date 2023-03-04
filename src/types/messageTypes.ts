@@ -8,7 +8,8 @@ export interface IMsg {
   audioData: audioData | null,
   imgs: imgData[] | null,
   createdAt: Timestamp,
-  isLoading?: boolean
+  isLoading?: boolean,
+  isRead: boolean
 }
 
 export interface audioData {

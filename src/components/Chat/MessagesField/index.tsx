@@ -36,12 +36,13 @@ const MessagesField = ({messages}: {messages: IMsg[]}) => {
               audioUrl: ''
             } : null}
             text={chatContext.loadingMessage.text ?? null}
-            imgs={null} // images are loading in DraggedImages (for now)
+            imgs={null} // images are loading in DraggedImages (at least for now)
             createdAt={chatContext.loadingMessage.createdAt}
             displayName={user.displayName ?? ''}
             photoURL={user.photoURL ?? ''}
             uid={user.uid}
             isLoading
+            isRead={false}
           />
         }
       </Box>

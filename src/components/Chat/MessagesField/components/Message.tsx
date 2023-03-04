@@ -2,12 +2,16 @@ import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
+import useTheme from '@mui/material/styles/useTheme'
 import { blue, blueGrey } from '@mui/material/colors'
 import { useContext, useEffect, useLayoutEffect, useRef } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { ImageMessage, VoiceMessage } from '.'
 import { FirebaseContext } from '../../../../MainConf'
 import { IMsg } from '../../../../types/messageTypes'
+import UnreadIcon from '@mui/icons-material/Done'
+import ReadIcon from '@mui/icons-material/DoneAll'
+import ClockIcon from '@mui/icons-material/AccessTime';
 
 const Message = (msg: IMsg) => {
   const {auth} = useContext(FirebaseContext)
@@ -15,6 +19,8 @@ const Message = (msg: IMsg) => {
   const boxRef = useRef<HTMLDivElement | null>(null);
   const minutes = msg.createdAt.toDate().getMinutes()
   const isCurrentUser = user?.uid === msg.uid
+  const theme = useTheme()
+console.log(msg.text);
 
   useLayoutEffect(() => {
     boxRef.current?.scrollIntoView({behavior: 'auto'})
@@ -57,13 +63,45 @@ const Message = (msg: IMsg) => {
             justifyContent='space-between'
           >
             <Typography variant='caption' component="h4">{msg.displayName}</Typography>
-            <Typography variant='caption' component="h4">
+            <Typography variant='caption' component="h4" lineHeight='1.17'>
               {msg.createdAt.toDate().getHours() + ':' + (minutes < 10 ? `0${minutes}` : minutes)}
             </Typography>
           </Box>
           {msg.imgs && <ImageMessage  imgs={Object.values(msg.imgs)} />}
-          {msg.text && <Typography>{msg.text}</Typography>}
+          {msg.text &&
+            <Typography>
+              {msg.text}
+              <Box sx={{
+                height: '100%',
+                float: 'right', ml: 1,
+                'svg': {
+                  height: 18, width: 18,
+                  color: theme.palette.text.secondary
+                }
+              }}>
+                {msg.isLoading ? <ClockIcon />
+                  : msg.isRead ? <ReadIcon sx={{color: theme.palette.primary.main + ' !important'}} />
+                  : <UnreadIcon />
+                }
+              </Box>
+            </Typography>
+          }
           {msg.audioData && <VoiceMessage audioData={msg.audioData} isLoading={msg.isLoading} />}
+          {!msg.text &&
+            <Box
+              display='flex'
+              sx={{'svg': {
+                height: 18, width: 18,
+                alignSelf: 'end', ml: 1,
+                color: theme.palette.text.secondary
+              }}}
+            >
+              {msg.isLoading ? <ClockIcon />
+                : msg.isRead ? <ReadIcon sx={{color: theme.palette.primary.main + ' !important'}} />
+                : <UnreadIcon />
+              }
+            </Box>
+          }
         </Box>
       </Grid>
     </Box>
