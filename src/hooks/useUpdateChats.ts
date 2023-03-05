@@ -5,14 +5,14 @@ import { useContext, useState } from 'react'
 import { FirebaseContext } from '../MainConf'
 import { IMsg } from '../types/messageTypes'
 import { ISidebarChat } from '../types/sidebaarChatTypes'
-import { UpdateChats, UpdateError, useUpdateChatsReturn } from '../types/useUpdateChatsTypes'
+import { UpdateChats, UpdateError, UpdateUserChats, useUpdateChatsReturn } from '../types/useUpdateChatsTypes'
 
 const useUpdateChats = (user: User): useUpdateChatsReturn => {
   const {firestore} = useContext(FirebaseContext)
   const [error, setError] = useState<UpdateError>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const UpdateChats: UpdateChats = async (field, value) => {
+  const UpdateUserChats: UpdateUserChats = async (parentField, field, value) => {
     try {
       setIsLoading(true)
       
@@ -25,19 +25,31 @@ const useUpdateChats = (user: User): useUpdateChatsReturn => {
         const chatData = Object.values(d.data())
     
         chatData.map(async (thisChatData: ISidebarChat) => {
+          console.log(thisChatData);
           if (thisChatData.userInfo.uid === user.uid) {
             await updateDoc(doc(firestore, 'userChats', d.id), {
-              [`${chatId}.userInfo.${field}`]: value
+              [`${chatId}.${parentField}.${field}`]: value
             })
           }
         })
       })
+    } catch (e) {
+      e instanceof FirebaseError && setError(e.message)
+    }
+    setIsLoading(false)
+  }
+
+  const UpdateChats: UpdateChats = async (field, value) => {
+    try {
+      setIsLoading(true)
     
       // Update chats collection
+      const userChatsQuery = query(collection(firestore, 'userChats'))
+      const userChatsSnapshot = await getDocs(userChatsQuery)
+
       if (!userChatsSnapshot.empty) {
         const chatsQuery = query(collection(firestore, 'chats'))
         const chatsSnapshot = await getDocs(chatsQuery)
-        console.log(chatsSnapshot)
     
         chatsSnapshot.forEach(async (d) => {
           const chatId = d.id
@@ -69,6 +81,7 @@ const useUpdateChats = (user: User): useUpdateChatsReturn => {
   }
 
   return [
+    UpdateUserChats,
     UpdateChats,
     isLoading,
     error

@@ -22,7 +22,7 @@ const Photo = () => {
   const {setErrorMessage, setSuccessMessage} = useContext(PopupContext)
   const [getDoc, _, getDocError] = useFirebaseDoc()
   if (!user) return <></>
-  const [updateChats, __, updateError] = useUpdateChats(user)
+  const [updateUserChats, updateChats, __, updateError] = useUpdateChats(user)
 
   useEffect(() => {
     getDocError && setErrorMessage(getDocError)
@@ -53,7 +53,8 @@ const Photo = () => {
       await updateProfile(user, {photoURL: url})
 
       // Update userChats and chats collection
-      await updateChats('photoURL', url)
+    await updateUserChats('userInfo', 'displayName', url)
+    await updateChats('photoURL', url)
 
       setSuccessMessage('Your photo successfully changed')
     } catch (e) {

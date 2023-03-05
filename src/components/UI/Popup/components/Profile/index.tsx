@@ -18,7 +18,7 @@ const ProfileContent = () => {
   const {setErrorMessage, setSuccessMessage} = useContext(PopupContext)
   const [getDoc, _, getDocError] = useFirebaseDoc()
   if (!user) return <></>
-  const [updateChats, __, updateError] = useUpdateChats(user)
+  const [updateUserChats, updateChats, __, updateError] = useUpdateChats(user)
 
   useEffect(() => {
     getDocError && setErrorMessage(getDocError)
@@ -36,6 +36,7 @@ const ProfileContent = () => {
     await updateProfile(user, {displayName})
 
     // Update userChats and chats collection
+    await updateUserChats('userInfo', 'displayName', displayName)
     await updateChats('displayName', displayName)
 
     setSuccessMessage('Your username successfully changed')
