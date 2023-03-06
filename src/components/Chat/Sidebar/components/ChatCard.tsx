@@ -3,7 +3,7 @@ import ReadIcon from '@mui/icons-material/DoneAll'
 import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice'
 import { Avatar, Box, Card, CardHeader, Paper, Typography, useTheme, Chip } from '@mui/material'
 import { blue } from '@mui/material/colors'
-import { DocumentData, Timestamp } from 'firebase/firestore'
+import { DocumentData, Timestamp, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore'
 import { useContext } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { FirebaseContext } from '../../../../MainConf'
@@ -11,6 +11,8 @@ import { getSidebarDate } from '../../../../functions/getDate'
 import { ChatContext } from '../../../../reducer/ChatReducer/ChatContext'
 import { ChatActionTypes } from '../../../../reducer/ChatReducer/types/ChatReducerTypes'
 import { ILastMessage, IUserInfo } from '../../../../types/sidebaarChatTypes'
+import { IMsg } from '../../../../types/messageTypes'
+import useUpdateChats from '../../../../hooks/useUpdateChats'
 
 interface ChatCardProps {
   date?: Timestamp,
@@ -22,11 +24,37 @@ interface ChatCardProps {
 
 const ChatCard = ({date, lastMessage, anotherUser, onClick, chosen}: ChatCardProps) => {
   const chatContext = useContext(ChatContext)
-  const {auth} = useContext(FirebaseContext)
+  const {auth, firestore} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const theme = useTheme()
+  if (!user) return <></>
+  const [_, updateChats] = useUpdateChats(user)
 
-  const handleSelect = (anotherUser: DocumentData) => {
+  const handleSelect = async (anotherUser: DocumentData) => {
+    //if (!msg.isRead && !msg.isLoading && msg.uid !== user?.uid) {
+      // await updateUserChats('lastMessage', 'isRead', true) //
+      // await updateUserChats('lastMessage', 'myMsg', true) //
+      await updateChats('isRead', true) //
+
+      const updateUserChats = async (field: 'isRead' | 'myMsg', value: boolean) => {
+        const userChatsQuery = query(collection(firestore, 'userChats'))
+        const userChatsSnapshot = await getDocs(userChatsQuery)
+      
+        userChatsSnapshot.forEach(async (d) => {
+          if (d.id !== user.uid) return
+          console.log(d.data());
+          const chatId = anotherUser.uid > d.id ? anotherUser.uid + d.id : d.id + anotherUser.uid
+          await updateDoc(doc(firestore, 'userChats', d.id), {
+            [`${chatId}.lastMessage.${field}`]: value
+          })
+        })
+      }
+
+      await updateUserChats('isRead', true)
+      await updateUserChats('myMsg', true)
+    //}
+
+    onClick && onClick()
     user && chatContext && chatContext.dispatch({
       type: ChatActionTypes.CHANGE_USER,
       payload: {currentUser: user, anotherUser}
@@ -42,7 +70,7 @@ const ChatCard = ({date, lastMessage, anotherUser, onClick, chosen}: ChatCardPro
         '&:first-of-type': {mt: 0},
         cursor: 'pointer',
       }}
-      onClick={() => {onClick && onClick(); handleSelect(anotherUser)}}
+      onClick={() => handleSelect(anotherUser)}
     >
       <CardHeader sx={{
         p: 0, width: '100%', position: 'relative',
