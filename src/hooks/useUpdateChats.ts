@@ -12,7 +12,7 @@ const useUpdateChats = (user: User): useUpdateChatsReturn => {
   const [error, setError] = useState<UpdateError>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const UpdateUserChats: UpdateUserChats = async (parentField, field, value) => {
+  const UpdateUserChats: UpdateUserChats = async (parentField, field, value, anotherUser) => {
     try {
       setIsLoading(true)
       
@@ -21,15 +21,19 @@ const useUpdateChats = (user: User): useUpdateChatsReturn => {
       const userChatsSnapshot = await getDocs(userChatsQuery)
     
       userChatsSnapshot.forEach(async (d) => {
-        const chatId = user.uid > d.id ? user.uid + d.id : d.id + user.uid
+        const chatId = anotherUser ?
+          anotherUser.uid > d.id ? anotherUser.uid + d.id : d.id + anotherUser.uid
+        : user.uid > d.id ? user.uid + d.id : d.id + user.uid
+        console.log(chatId);
+        
         const chatData = Object.values(d.data())
     
         chatData.map(async (thisChatData: ISidebarChat) => {
-          console.log(thisChatData);
-          if (thisChatData.userInfo.uid === user.uid) {
-            await updateDoc(doc(firestore, 'userChats', d.id), {
-              [`${chatId}.${parentField}.${field}`]: value
-            })
+          if ((!anotherUser && thisChatData.userInfo.uid === user.uid) ||
+            (anotherUser && thisChatData.userInfo.uid === anotherUser.uid)) {
+            // await updateDoc(doc(firestore, 'userChats', d.id), {
+            //   [`${chatId}.${parentField}.${field}`]: value
+            // })
           }
         })
       })
@@ -39,41 +43,42 @@ const useUpdateChats = (user: User): useUpdateChatsReturn => {
     setIsLoading(false)
   }
 
-  const UpdateChats: UpdateChats = async (field, value) => {
+  const UpdateChats: UpdateChats = async (field, value, anotherUser) => {
     try {
       setIsLoading(true)
     
       // Update chats collection
-      const userChatsQuery = query(collection(firestore, 'userChats'))
-      const userChatsSnapshot = await getDocs(userChatsQuery)
-
-      if (!userChatsSnapshot.empty) {
-        const chatsQuery = query(collection(firestore, 'chats'))
-        const chatsSnapshot = await getDocs(chatsQuery)
+      const chatsQuery = query(collection(firestore, 'chats'))
+      const chatsSnapshot = await getDocs(chatsQuery)
     
-        chatsSnapshot.forEach(async (d) => {
-          const chatId = d.id
-          const chatData = d.data()
-          if (!chatId.includes(user.uid)) return
-          
-          if (chatData.messages) {
-            const updatedMessages = chatData.messages.map((message: IMsg) => {
-              if (message.uid === user.uid) {
-                return {
-                  ...message,
-                  [field]: value
-                }
-              } else {
-                return message
+      chatsSnapshot.forEach(async (d) => {
+        if (!d.id.includes(user.uid)) return
+        
+        if (d.data().messages) {
+          const updatedMessages = d.data().messages.map((message: IMsg) => {
+            if (message.uid === anotherUser?.uid) {
+              // another user's messages now are read by current user
+              // if there is anotherUser, it is 'isRead' field
+              return {
+                ...message,
+                [field]: value
               }
-            })
-    
-            await updateDoc(doc(firestore, 'chats', chatId), {
-              messages: updatedMessages
-            })
-          }
-        })
-      }
+            } else if (!anotherUser && message.uid === user.uid) {
+              // change photoURL or displayName for every current user's message
+              return {
+                ...message,
+                [field]: value
+              }
+            } else {
+              return message
+            }
+          })
+          
+          await updateDoc(doc(firestore, 'chats', d.id), {
+            messages: updatedMessages
+          })
+        }
+      })
     } catch (e) {
       e instanceof FirebaseError && setError(e.message)
     }

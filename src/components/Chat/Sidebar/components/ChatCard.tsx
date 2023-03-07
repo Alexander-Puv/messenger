@@ -28,30 +28,59 @@ const ChatCard = ({date, lastMessage, anotherUser, onClick, chosen}: ChatCardPro
   const [user] = useAuthState(auth)
   const theme = useTheme()
   if (!user) return <></>
-  const [_, updateChats] = useUpdateChats(user)
+  const [updateUserChats, updateChats] = useUpdateChats(user)
 
   const handleSelect = async (anotherUser: DocumentData) => {
     //if (!msg.isRead && !msg.isLoading && msg.uid !== user?.uid) {
-      // await updateUserChats('lastMessage', 'isRead', true) //
-      // await updateUserChats('lastMessage', 'myMsg', true) //
-      await updateChats('isRead', true) //
+      // const updateChats = async () => {
+      //   const userChatsQuery = query(collection(firestore, 'userChats'))
+      //   const userChatsSnapshot = await getDocs(userChatsQuery)
 
-      const updateUserChats = async (field: 'isRead' | 'myMsg', value: boolean) => {
-        const userChatsQuery = query(collection(firestore, 'userChats'))
-        const userChatsSnapshot = await getDocs(userChatsQuery)
+      //   if (!userChatsSnapshot.empty) {
+      //     const chatsQuery = query(collection(firestore, 'chats'))
+      //     const chatsSnapshot = await getDocs(chatsQuery)
       
-        userChatsSnapshot.forEach(async (d) => {
-          if (d.id !== user.uid) return
-          console.log(d.data());
-          const chatId = anotherUser.uid > d.id ? anotherUser.uid + d.id : d.id + anotherUser.uid
-          await updateDoc(doc(firestore, 'userChats', d.id), {
-            [`${chatId}.lastMessage.${field}`]: value
-          })
-        })
-      }
+      //     chatsSnapshot.forEach(async (d) => {
+      //       if (!d.id.includes(user.uid) || !d.id.includes(anotherUser.uid)) return
+            
+      //       if (d.data().messages) {
+      //         const updatedMessages = d.data().messages.map((message: IMsg) => {
+      //           if (message.uid === anotherUser.uid) {
+      //             console.log(true, message);
+      //             return {
+      //               ...message,
+      //               isRead: true
+      //             }
+      //           } else {
+      //             return message
+      //           }
+      //         })
+      
+      //         await updateDoc(doc(firestore, 'chats', d.id), {
+      //           messages: updatedMessages
+      //         })
+      //       }
+      //     })
+      //   }
+      // }
 
-      await updateUserChats('isRead', true)
-      await updateUserChats('myMsg', true)
+      await updateChats('isRead', true, anotherUser)
+
+      // const updateUserChats = async (field: 'isRead' | 'myMsg', value: boolean) => {
+      //   const userChatsQuery = query(collection(firestore, 'userChats'))
+      //   const userChatsSnapshot = await getDocs(userChatsQuery)
+      
+      //   userChatsSnapshot.forEach(async (d) => {
+      //     if (d.id !== user.uid) return
+      //     const chatId = anotherUser.uid > d.id ? anotherUser.uid + d.id : d.id + anotherUser.uid
+      //     await updateDoc(doc(firestore, 'userChats', d.id), {
+      //       [`${chatId}.lastMessage.${field}`]: value
+      //     })
+      //   })
+      // }
+
+      await updateUserChats('lastMessage', 'isRead', true, anotherUser)
+      await updateUserChats('lastMessage', 'myMsg', true, anotherUser)
     //}
 
     onClick && onClick()
