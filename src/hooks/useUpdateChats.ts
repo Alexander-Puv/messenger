@@ -1,7 +1,7 @@
 import { FirebaseError } from 'firebase/app'
 import { User } from 'firebase/auth'
 import { collection, doc, getDocs, query, updateDoc } from 'firebase/firestore'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { FirebaseContext } from '../MainConf'
 import { IMsg } from '../types/messageTypes'
 import { ISidebarChat } from '../types/sidebaarChatTypes'
@@ -12,7 +12,7 @@ const useUpdateChats = (user: User): useUpdateChatsReturn => {
   const [error, setError] = useState<UpdateError>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const UpdateUserChats: UpdateUserChats = async (parentField, field, value, anotherUser) => {
+  const UpdateUserChats: UpdateUserChats = async (parentField, field, value, anotherUserUid) => {
     try {
       setIsLoading(true)
       
@@ -21,21 +21,30 @@ const useUpdateChats = (user: User): useUpdateChatsReturn => {
       const userChatsSnapshot = await getDocs(userChatsQuery)
     
       userChatsSnapshot.forEach(async (d) => {
-        const chatId = anotherUser ?
-          anotherUser.uid > d.id ? anotherUser.uid + d.id : d.id + anotherUser.uid
+        const chatId = anotherUserUid ?
+          anotherUserUid > d.id ? anotherUserUid + d.id : d.id + anotherUserUid
         : user.uid > d.id ? user.uid + d.id : d.id + user.uid
-        console.log(chatId);
-        
-        const chatData = Object.values(d.data())
+        const chatData = d.data()[chatId]
+
+        if (!chatId.includes(user.uid) || !chatData) return
+        console.log(chatData);
     
-        chatData.map(async (thisChatData: ISidebarChat) => {
-          if ((!anotherUser && thisChatData.userInfo.uid === user.uid) ||
-            (anotherUser && thisChatData.userInfo.uid === anotherUser.uid)) {
+        // chatData.map(async (thisChatData: ISidebarChat) => {
+          // console.log(thisChatData);
+          if ((field !== 'isRead' && chatData.userInfo.uid === user.uid) ||
+            (field === 'isRead' && chatData.userInfo.uid === anotherUserUid)) {
+              console.log(true);
+            // await updateDoc(doc(firestore, 'userChats', d.id), {
+            //   [`${chatId}.${parentField}.${field}`]: value
+            // })
+          } 
+          if (field === 'myMsg' && chatData.userInfo.uid === anotherUserUid) {
+            console.log(false);
             // await updateDoc(doc(firestore, 'userChats', d.id), {
             //   [`${chatId}.${parentField}.${field}`]: value
             // })
           }
-        })
+        // })
       })
     } catch (e) {
       e instanceof FirebaseError && setError(e.message)
@@ -43,7 +52,7 @@ const useUpdateChats = (user: User): useUpdateChatsReturn => {
     setIsLoading(false)
   }
 
-  const UpdateChats: UpdateChats = async (field, value, anotherUser) => {
+  const UpdateChats: UpdateChats = async (field, value, anotherUserUid) => {
     try {
       setIsLoading(true)
     
@@ -56,14 +65,14 @@ const useUpdateChats = (user: User): useUpdateChatsReturn => {
         
         if (d.data().messages) {
           const updatedMessages = d.data().messages.map((message: IMsg) => {
-            if (message.uid === anotherUser?.uid) {
+            if (message.uid === anotherUserUid) {
               // another user's messages now are read by current user
               // if there is anotherUser, it is 'isRead' field
               return {
                 ...message,
                 [field]: value
               }
-            } else if (!anotherUser && message.uid === user.uid) {
+            } else if (!anotherUserUid && message.uid === user.uid) {
               // change photoURL or displayName for every current user's message
               return {
                 ...message,

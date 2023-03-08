@@ -1,16 +1,30 @@
 import Box from '@mui/material/Box';
-import React, { useContext, useLayoutEffect, useRef } from 'react';
+import React, { useContext, useEffect, useLayoutEffect, useRef } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FirebaseContext } from '../../../MainConf';
 import { ChatContext } from '../../../reducer/ChatReducer/ChatContext';
 import { IMsg } from '../../../types/messageTypes';
 import { getMessageDate } from '../../../functions/getDate';
 import { ChatDate, ChatStart, Message } from './components';
+import useUpdateChats from '../../../hooks/useUpdateChats';
 
-const MessagesField = ({messages}: {messages: IMsg[]}) => {
+const MessagesField = ({messages, chatId}: {messages: IMsg[], chatId: string}) => {
   const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const chatContext = useContext(ChatContext)
+  if (!user) return <></>
+  const anotherUserUid = chatId.replace(user.uid, '')
+  const [updateUserChats, updateChats] = useUpdateChats(user)
+
+  useEffect(() => {
+    const updateIsRead = async () => {
+      await updateChats('isRead', true, anotherUserUid)
+  
+      await updateUserChats('lastMessage', 'isRead', true, anotherUserUid)
+      await updateUserChats('lastMessage', 'myMsg', true, anotherUserUid)
+    }
+    updateIsRead()
+  }, [messages])
 
   return <>
     <Box sx={{overflowY: 'auto', userSelect: 'initial'}} width='100%' position='absolute' top={0} bottom='56px'>

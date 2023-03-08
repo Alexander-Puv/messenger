@@ -11,6 +11,7 @@ import { DraggedImages } from './components';
 const MainPart = () => {
   const {firestore} = useContext(FirebaseContext)
   const chatContext = useContext(ChatContext)
+  const [chatId, setChatId] = useState<string | null>(null)
   const [messages, setMessages] = useState<IMsg[] | null>(null)
   const [isDragged, setIsDragged] = useState(false)
   const [error, setError] = useState(false)
@@ -20,6 +21,7 @@ const MainPart = () => {
     if (chatContext?.state) {
       const unsub = onSnapshot(doc(firestore, "chats", chatContext.state.chatId), (doc) => {
         doc.exists() && setMessages(doc.data().messages)
+        doc.exists() && setChatId(doc.id)
       });
 
       return () => {
@@ -56,7 +58,7 @@ const MainPart = () => {
   }
 
   return <>
-    {messages ?
+    {messages && chatId ?
         <Grid
           container flex={1} position='relative'
           onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}
@@ -65,7 +67,7 @@ const MainPart = () => {
           }}}
         >
           {!chatContext?.images || !chatContext?.images?.length ? <>
-            <MessagesField messages={messages} />
+            <MessagesField messages={messages} chatId={chatId} />
             <Footer />
             <Box
               position='absolute' width='100%' height='100%'

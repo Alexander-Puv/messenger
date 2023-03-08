@@ -1,9 +1,9 @@
 import UnreadIcon from '@mui/icons-material/Done'
 import ReadIcon from '@mui/icons-material/DoneAll'
 import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice'
-import { Avatar, Box, Card, CardHeader, Paper, Typography, useTheme, Chip } from '@mui/material'
+import { Avatar, Box, Card, CardHeader, Paper, Typography, useTheme } from '@mui/material'
 import { blue } from '@mui/material/colors'
-import { DocumentData, Timestamp, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore'
+import { DocumentData, Timestamp } from 'firebase/firestore'
 import { useContext } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { FirebaseContext } from '../../../../MainConf'
@@ -11,8 +11,6 @@ import { getSidebarDate } from '../../../../functions/getDate'
 import { ChatContext } from '../../../../reducer/ChatReducer/ChatContext'
 import { ChatActionTypes } from '../../../../reducer/ChatReducer/types/ChatReducerTypes'
 import { ILastMessage, IUserInfo } from '../../../../types/sidebaarChatTypes'
-import { IMsg } from '../../../../types/messageTypes'
-import useUpdateChats from '../../../../hooks/useUpdateChats'
 
 interface ChatCardProps {
   date?: Timestamp,
@@ -24,65 +22,11 @@ interface ChatCardProps {
 
 const ChatCard = ({date, lastMessage, anotherUser, onClick, chosen}: ChatCardProps) => {
   const chatContext = useContext(ChatContext)
-  const {auth, firestore} = useContext(FirebaseContext)
+  const {auth} = useContext(FirebaseContext)
   const [user] = useAuthState(auth)
   const theme = useTheme()
-  if (!user) return <></>
-  const [updateUserChats, updateChats] = useUpdateChats(user)
 
   const handleSelect = async (anotherUser: DocumentData) => {
-    //if (!msg.isRead && !msg.isLoading && msg.uid !== user?.uid) {
-      // const updateChats = async () => {
-      //   const userChatsQuery = query(collection(firestore, 'userChats'))
-      //   const userChatsSnapshot = await getDocs(userChatsQuery)
-
-      //   if (!userChatsSnapshot.empty) {
-      //     const chatsQuery = query(collection(firestore, 'chats'))
-      //     const chatsSnapshot = await getDocs(chatsQuery)
-      
-      //     chatsSnapshot.forEach(async (d) => {
-      //       if (!d.id.includes(user.uid) || !d.id.includes(anotherUser.uid)) return
-            
-      //       if (d.data().messages) {
-      //         const updatedMessages = d.data().messages.map((message: IMsg) => {
-      //           if (message.uid === anotherUser.uid) {
-      //             console.log(true, message);
-      //             return {
-      //               ...message,
-      //               isRead: true
-      //             }
-      //           } else {
-      //             return message
-      //           }
-      //         })
-      
-      //         await updateDoc(doc(firestore, 'chats', d.id), {
-      //           messages: updatedMessages
-      //         })
-      //       }
-      //     })
-      //   }
-      // }
-
-      await updateChats('isRead', true, anotherUser)
-
-      // const updateUserChats = async (field: 'isRead' | 'myMsg', value: boolean) => {
-      //   const userChatsQuery = query(collection(firestore, 'userChats'))
-      //   const userChatsSnapshot = await getDocs(userChatsQuery)
-      
-      //   userChatsSnapshot.forEach(async (d) => {
-      //     if (d.id !== user.uid) return
-      //     const chatId = anotherUser.uid > d.id ? anotherUser.uid + d.id : d.id + anotherUser.uid
-      //     await updateDoc(doc(firestore, 'userChats', d.id), {
-      //       [`${chatId}.lastMessage.${field}`]: value
-      //     })
-      //   })
-      // }
-
-      await updateUserChats('lastMessage', 'isRead', true, anotherUser)
-      await updateUserChats('lastMessage', 'myMsg', true, anotherUser)
-    //}
-
     onClick && onClick()
     user && chatContext && chatContext.dispatch({
       type: ChatActionTypes.CHANGE_USER,
