@@ -84,11 +84,11 @@ export const ChatContextProvider = ({children}: IChatContextProvider) => {
       if (state.user) { // it is always true here
         // change users last message
         await updateDoc(doc(firestore, 'userChats', state.user.uid), {
-          [state.chatId + '.lastMessage']: lastMessage,
+          [state.chatId + '.lastMessage']: {...lastMessage, myMsg: false},
           [state.chatId + '.date']: serverTimestamp()
         })
         await updateDoc(doc(firestore, 'userChats', user.uid), {
-          [state.chatId + '.lastMessage']: lastMessage,
+          [state.chatId + '.lastMessage']: {...lastMessage, myMsg: true},
           [state.chatId + '.date']: serverTimestamp()
         })
       }

@@ -19,9 +19,7 @@ const MessagesField = ({messages, chatId}: {messages: IMsg[], chatId: string}) =
   useEffect(() => {
     const updateIsRead = async () => {
       await updateChats('isRead', true, anotherUserUid)
-  
       await updateUserChats('lastMessage', 'isRead', true, anotherUserUid)
-      await updateUserChats('lastMessage', 'myMsg', true, anotherUserUid)
     }
     updateIsRead()
   }, [messages])

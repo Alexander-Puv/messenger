@@ -21,30 +21,29 @@ const useUpdateChats = (user: User): useUpdateChatsReturn => {
       const userChatsSnapshot = await getDocs(userChatsQuery)
     
       userChatsSnapshot.forEach(async (d) => {
-        const chatId = anotherUserUid ?
-          anotherUserUid > d.id ? anotherUserUid + d.id : d.id + anotherUserUid
-        : user.uid > d.id ? user.uid + d.id : d.id + user.uid
-        const chatData = d.data()[chatId]
-
-        if (!chatId.includes(user.uid) || !chatData) return
-        console.log(chatData);
-    
-        // chatData.map(async (thisChatData: ISidebarChat) => {
-          // console.log(thisChatData);
-          if ((field !== 'isRead' && chatData.userInfo.uid === user.uid) ||
-            (field === 'isRead' && chatData.userInfo.uid === anotherUserUid)) {
-              console.log(true);
-            // await updateDoc(doc(firestore, 'userChats', d.id), {
-            //   [`${chatId}.${parentField}.${field}`]: value
-            // })
-          } 
-          if (field === 'myMsg' && chatData.userInfo.uid === anotherUserUid) {
-            console.log(false);
-            // await updateDoc(doc(firestore, 'userChats', d.id), {
-            //   [`${chatId}.${parentField}.${field}`]: value
-            // })
+        // const chatId = anotherUserUid ?
+        //   anotherUserUid > d.id ? anotherUserUid + d.id : d.id + anotherUserUid
+        // : user.uid > d.id ? user.uid + d.id : d.id + user.uid
+        // const chatData = d.data()[chatId]
+        const chatIds = Object.keys(d.data())
+        
+        for (let i = 0; i < chatIds.length; i++) {
+          const chatId = chatIds[i]
+          const chatData = d.data()[chatId]
+          if (anotherUserUid) {
+            if (chatId.includes(anotherUserUid) && chatId.includes(user.uid) &&
+              ((chatData.userInfo.uid === user.uid && chatData.lastMessage.myMsg) ||
+              (chatData.userInfo.uid === anotherUserUid && !chatData.lastMessage.myMsg))) {
+              await updateDoc(doc(firestore, 'userChats', d.id), {
+                [`${chatId}.${parentField}.${field}`]: value
+              })
+            }
+          } else if (chatData.userInfo.uid === user.uid) {
+            await updateDoc(doc(firestore, 'userChats', d.id), {
+              [`${chatId}.${parentField}.${field}`]: value
+            })
           }
-        // })
+        }
       })
     } catch (e) {
       e instanceof FirebaseError && setError(e.message)
