@@ -21,24 +21,26 @@ const useUpdateChats = (user: User): useUpdateChatsReturn => {
       const userChatsSnapshot = await getDocs(userChatsQuery)
     
       userChatsSnapshot.forEach(async (d) => {
-        // const chatId = anotherUserUid ?
-        //   anotherUserUid > d.id ? anotherUserUid + d.id : d.id + anotherUserUid
-        // : user.uid > d.id ? user.uid + d.id : d.id + user.uid
-        // const chatData = d.data()[chatId]
         const chatIds = Object.keys(d.data())
         
         for (let i = 0; i < chatIds.length; i++) {
           const chatId = chatIds[i]
           const chatData = d.data()[chatId]
           if (anotherUserUid) {
+            // if anotherUserUid, this is isRead field
             if (chatId.includes(anotherUserUid) && chatId.includes(user.uid) &&
               ((chatData.userInfo.uid === user.uid && chatData.lastMessage.myMsg) ||
               (chatData.userInfo.uid === anotherUserUid && !chatData.lastMessage.myMsg))) {
+              // if chat between this and another user
+              // and either if another user have seen this user message
+              // or if this user have seen another user message
+              // then change isRead
               await updateDoc(doc(firestore, 'userChats', d.id), {
                 [`${chatId}.${parentField}.${field}`]: value
               })
             }
           } else if (chatData.userInfo.uid === user.uid) {
+            // otherwise if another user has chat with this, change data in Sidebar
             await updateDoc(doc(firestore, 'userChats', d.id), {
               [`${chatId}.${parentField}.${field}`]: value
             })
