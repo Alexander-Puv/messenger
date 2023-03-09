@@ -1,56 +1,18 @@
 import { useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { BrowserRouter } from 'react-router-dom'
 import './App.css'
 import { FirebaseContext } from './MainConf'
 import { AppRouter, Navbar } from './components'
 import { backgroundImage } from './utils/colors'
-import { collection, doc, getDocs, query, updateDoc } from 'firebase/firestore'
-import { IMsg } from './types/messageTypes'
-import { ISidebarChat } from './types/sidebaarChatTypes'
 
 function App() {
-  const {auth, firestore} = useContext(FirebaseContext)
+  const {auth} = useContext(FirebaseContext)
   const [user, loading] = useAuthState(auth)
   const theme = useTheme()
-
-  // useEffect(() => {
-    // const addChecks = async () => {
-      // const userQuery = query(collection(firestore, 'chats'))
-      // const userSnapshot = await getDocs(userQuery)
-    
-      // userSnapshot.forEach(async (d) => {
-      //   const updatedMessages = d.data().messages.map((msg: IMsg) => {
-      //     return {
-      //       ...msg,
-      //       isRead: true
-      //     }
-      //   })
-
-      //   await updateDoc(doc(firestore, 'chats', d.id), {
-      //     messages: updatedMessages
-      //   })
-      // })
-
-      // const userChatsQuery = query(collection(firestore, 'userChats'))
-      // const userChatsSnapshot = await getDocs(userChatsQuery)
-
-      // userChatsSnapshot.forEach(async (d) => {
-      //   const chatId = Object.keys(d.data());
-        
-      //   chatId.map(async (thisId) => {
-      //     await updateDoc(doc(firestore, 'userChats', d.id), {
-      //       [`${thisId}.lastMessage.myMsg`]: true
-      //     })
-      //   })
-      // })
-    // }
-
-    // addChecks()
-  // }, [])
 
   return (
     <Box sx={{
