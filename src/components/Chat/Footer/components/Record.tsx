@@ -33,6 +33,7 @@ const Record = ({isRecording, setIsRecording}: RecordProps) => {
   const StopRecording = async (send?: true) => {
     if (mediaRecorder) { // it is always true here but TS doesn't understand it
       mediaRecorder.stop()
+      setIsRecording(false)
 
       if (send) {
         const audioChunks: Blob[] = []
