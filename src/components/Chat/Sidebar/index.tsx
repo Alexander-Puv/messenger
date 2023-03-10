@@ -31,7 +31,7 @@ const Sidebar = () => {
 
     setIsLoading(true)
 
-    const q = query(collection(firestore, 'users'), where('displayName', '==', username))
+    const q = query(collection(firestore, 'users'), where('displayNameLowercase', '==', username.toLowerCase()))
 
     try {
       const querySnapshot = await getDocs(q);

@@ -30,7 +30,10 @@ const ProfileContent = () => {
   const applyDisplayName = async () => {
     // Update users collection
     getDoc && getDoc('users', 'uid', user.uid, async (d) => {
-      await updateDoc(doc(firestore, 'users', d.id), {displayName})
+      await updateDoc(doc(firestore, 'users', d.id), {
+        displayName,
+        displayNameLowercase: displayName.toLowerCase()
+      })
     })
 
     await updateProfile(user, {displayName})
